@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Employee Management System - Aganitha</title>
+
+    <!-- Reveal.js Core CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css"
+      id="theme"
+    />
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
+      }
+
+      .reveal .slides section {
+        text-align: left;
+      }
+
+      .reveal .slides section h1,
+      .reveal .slides section h2 {
+        text-align: center;
+      }
+
+      .reveal h1,
+      .reveal h2,
+      .reveal h3,
+      .reveal h4 {
+        text-transform: none;
+        color: #38bdf8;
+      }
+
+      .reveal h3 {
+        margin-top: 0.5em;
+        margin-bottom: 0.4em;
+      }
+
+      .reveal p,
+      .reveal ul,
+      .reveal ol {
+        font-size: 28px;
+        margin-bottom: 0.6em;
+        line-height: 1.5;
+      }
+
+      .reveal ul ul {
+        font-size: 0.9em;
+        margin-left: 20px;
+        margin-top: 0.3em;
+      }
+
+      .reveal ul li {
+        margin-bottom: 0.4em;
+      }
+
+      .highlight {
+        color: #38bdf8;
+        font-weight: bold;
+      }
+
+      .center-text {
+        text-align: center;
+      }
+
+      .subtitle {
+        color: #94a3b8;
+        font-size: 0.8em;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Title Slide -->
+        <section>
+          <h1 style="font-size: 2.5em; margin-bottom: 30px">
+            Employee Management System
+          </h1>
+          <p class="center-text" style="font-size: 1.3em; color: #38bdf8">
+            Intelligent Workforce Management Platform
+          </p>
+          <p class="center-text subtitle">Aganitha AI</p>
+        </section>
+
+        <!-- What We're Building -->
+        <section>
+          <h2>What We're Building</h2>
+          <p style="margin-top: 40px">
+            A unified platform that replaces manual Excel processes with:
+          </p>
+          <ul style="margin-top: 30px">
+            <li>Centralized employee data and skills tracking</li>
+            <li>Real-time project resource allocation</li>
+            <li>Intelligent cost calculations and budget monitoring</li>
+            <li>AI-powered weekly reporting and insights</li>
+          </ul>
+        </section>
+
+        <!-- EMPLOYEE FEATURES SECTION -->
+        <section>
+          <section>
+            <h2>Employee Features</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Employee Profiles</h3>
+            <ul>
+              <li>Complete records from HR Excel data</li>
+              <li>Personal details (name, email, DOB, location)</li>
+              <li>Employment info (joining date, designation, department)</li>
+              <li>Education background (college, stream)</li>
+              <li>Document storage (resume, bio, picture, GitHub)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Skills Tracking</h3>
+            <ul>
+              <li>Multi-skill inventory per employee</li>
+              <li>5-star proficiency rating system</li>
+              <li>Manager verification workflows</li>
+              <li>Search by skill combinations</li>
+              <li>Skill gap identification across organization</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Weekly Reporting</h3>
+            <ul>
+              <li>Consolidated reports covering all projects</li>
+              <li>Markdown-based report submission</li>
+              <li>Private (employee + manager only)</li>
+              <li>AI-powered summarization</li>
+              <li>Sentiment analysis</li>
+              <li>Historical report archive</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Smart Search & Filtering</h3>
+            <ul>
+              <li>Filter by skills, location, availability</li>
+              <li>Flexibility scoring algorithm</li>
+              <li>Find right person in seconds</li>
+              <li>Saved search presets</li>
+              <li>Skill endorsement system</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Employee Dashboard</h3>
+            <ul>
+              <li>View current project allocations</li>
+              <li>Profile completion percentage</li>
+              <li>Weekly report reminders and status</li>
+              <li>Skill verification status</li>
+              <li>Pending action checklist</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- PROJECT FEATURES SECTION -->
+        <section>
+          <section>
+            <h2>Project Features</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Project Registry</h3>
+            <ul>
+              <li>Centralized project catalog</li>
+              <li>Project metadata (name, code, dates)</li>
+              <li>Project lead identification</li>
+              <li>Classification (internal vs client)</li>
+              <li>Status tracking (active, paused, completed)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Resource Allocation</h3>
+            <ul>
+              <li>Percentage-based employee assignments</li>
+              <li>Current team composition view</li>
+              <li>Historical team member tracking</li>
+              <li>Transferability flags (internal lock-in)</li>
+              <li>Real-time capacity calculations</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Cost Tracking</h3>
+            <ul>
+              <li>Hierarchy-based cost factors</li>
+              <li>Real-time project spend calculation</li>
+              <li>Formula: Hours × Hierarchy Factor</li>
+              <li>Cost breakdown by employee and time period</li>
+              <li>Historical cost analysis</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Budget Management</h3>
+            <ul>
+              <li>Budget threshold alerts (75%, 90%, 100%)</li>
+              <li>Burn rate visualization</li>
+              <li>Projected budget exhaustion dates</li>
+              <li>Cost comparison across projects</li>
+              <li>Granular spending breakdowns</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Project Health Monitoring</h3>
+            <ul>
+              <li>AI aggregation of team weekly reports</li>
+              <li>Project health scoring (healthy, at-risk, blocked)</li>
+              <li>Common blocker identification</li>
+              <li>Sentiment trend tracking</li>
+              <li>Automated escalation alerts</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Project Dashboard</h3>
+            <ul>
+              <li>All projects with status and team size</li>
+              <li>Current and past contributors</li>
+              <li>Project timeline visualization</li>
+              <li>Special notes and restrictions</li>
+              <li>Quick access to project reports</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- User Journeys -->
+        <section>
+          <section>
+            <h2>User Journeys</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Employee Daily Workflow</h3>
+            <ul>
+              <li>Login with corporate credentials</li>
+              <li>View project allocations on dashboard</li>
+              <li>Track pending actions and tasks</li>
+              <li>Submit weekly reports on Friday</li>
+              <li>Update skills and experience as needed</li>
+              <li>Search for colleagues and their expertise</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Manager Weekly Workflow</h3>
+            <ul>
+              <li>Review AI-summarized team reports</li>
+              <li>Monitor project health scores</li>
+              <li>Search for available talent for new projects</li>
+              <li>Assign resources with allocations</li>
+              <li>Verify skills and certifications</li>
+              <li>Track project costs and budget alerts</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- MANAGER TOOLS -->
+        <section>
+          <section>
+            <h2>Manager Controls</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Team Oversight</h3>
+            <ul>
+              <li>Dashboard showing team capacity</li>
+              <li>AI-summarized weekly reports (70% time savings)</li>
+              <li>Skill verification workflows</li>
+              <li>Profile audit and correction</li>
+              <li>Resource allocation tracking</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Resource Planning</h3>
+            <ul>
+              <li>Advanced search with multiple filters</li>
+              <li>Flexibility scores for candidate ranking</li>
+              <li>Assign resources with allocation percentages</li>
+              <li>View bench (available employees)</li>
+              <li>Forecast future resource needs</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Data Management</h3>
+            <ul>
+              <li>CSV import/export for bulk operations</li>
+              <li>Complete audit trail for compliance</li>
+              <li>Edit and verify employee data</li>
+              <li>Generate custom reports</li>
+              <li>Permission-based access control</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- Technology Stack -->
+        <section>
+          <section>
+            <h2>Technology Stack</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Frontend</h3>
+            <ul>
+              <li>
+                <span class="highlight">Next.js 15</span> - Modern web framework
+                with TypeScript
+              </li>
+              <li>
+                <span class="highlight">Shadcn UI + Tailwind</span> -
+                Professional component library
+              </li>
+              <li>
+                <span class="highlight">Framer Motion</span> - Smooth animations
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Backend</h3>
+            <ul>
+              <li>
+                <span class="highlight">Next.js Server Components</span> - Fast
+                server-side processing
+              </li>
+              <li>
+                <span class="highlight">PostgreSQL</span> - Enterprise database
+              </li>
+              <li>
+                <span class="highlight">Drizzle ORM</span> - Type-safe queries
+              </li>
+              <li>
+                <span class="highlight">Redis + BullMQ</span> - Background jobs
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>AI & Auth</h3>
+            <ul>
+              <li>
+                <span class="highlight">Vercel AI SDK</span> - Report
+                summarization
+              </li>
+              <li>
+                <span class="highlight">Custom LDAP</span> - Corporate directory
+                integration
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- Business Benefits -->
+        <section>
+          <section>
+            <h2>Business Benefits</h2>
+            <p class="center-text subtitle">Navigate vertically for details</p>
+          </section>
+
+          <section>
+            <h3>Efficiency Gains</h3>
+            <ul>
+              <li>70% reduction in report review time</li>
+              <li>60% faster resource allocation</li>
+              <li>40% decrease in bench time</li>
+              <li>Single source of truth for employee data</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Financial Impact</h3>
+            <ul>
+              <li>Real-time cost visibility prevents overruns</li>
+              <li>Better budget estimation and forecasting</li>
+              <li>Optimized resource utilization</li>
+              <li>Reduced administrative overhead</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Strategic Value</h3>
+            <ul>
+              <li>Data-driven workforce planning</li>
+              <li>Proactive skill gap identification</li>
+              <li>Early project risk detection</li>
+              <li>Complete audit trail for compliance</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- Current Phase -->
+        <section>
+          <h2>Current Phase</h2>
+          <h3 style="margin-top: 40px">Foundation Building</h3>
+          <ul style="margin-top: 30px">
+            <li>Migrating HR Excel data to database</li>
+            <li>Designing schema for employees and skills</li>
+            <li>Gathering project-related requirements</li>
+            <li>Setting up authentication with LDAP</li>
+            <li>Building employee profile pages</li>
+          </ul>
+        </section>
+
+        <!-- Roadmap -->
+        <section>
+          <h2>Implementation Roadmap</h2>
+          <ul style="margin-top: 40px">
+            <li>
+              <span class="highlight">Phase 1 (Current):</span> Employee
+              profiles + Skills + Auth
+            </li>
+            <li>
+              <span class="highlight">Phase 2:</span> Projects + Resource
+              Allocations + Search
+            </li>
+            <li>
+              <span class="highlight">Phase 3:</span> Weekly reports + AI + Cost
+              engine
+            </li>
+            <li>
+              <span class="highlight">Phase 4:</span> Advanced analytics +
+              Dashboards + Mobile
+            </li>
+          </ul>
+        </section>
+
+        <!-- Thank You -->
+        <section>
+          <h2 class="center-text">Questions?</h2>
+          <p
+            class="center-text"
+            style="margin-top: 80px; font-size: 1.3em; color: #38bdf8"
+          >
+            Employee Management System
+          </p>
+          <p class="center-text subtitle">
+            Building the future of workforce intelligence
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/zoom/zoom.min.js"></script>
+
+    <script>
+      Reveal.initialize({
+        hash: true,
+        center: true,
+        plugins: [RevealNotes, RevealZoom],
+        width: 1000,
+        height: 700,
+        margin: 0.04,
+        transition: "slide",
+      });
+    </script>
+  </body>
+</html>

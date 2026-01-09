@@ -1,0 +1,366 @@
+{
+  "employees": [
+    {
+      "id": "EMP001",
+      "name": "John Doe",
+      "designation": "Senior Software Engineer",
+      "department": "Engineering",
+      "email": "john.doe@aganitha.com",
+      "phone": "+1-555-0101",
+      "location": "San Francisco, CA",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
+      "reportingTo": "Sarah Williams",
+      "joinDate": "2022-03-15",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {
+          "id": "SK001",
+          "technology": "React",
+          "rating": 4,
+          "status": "verified"
+        },
+        {
+          "id": "SK002",
+          "technology": "Node.js",
+          "rating": 5,
+          "status": "verified"
+        },
+        {
+          "id": "SK003",
+          "technology": "TypeScript",
+          "rating": 3,
+          "status": "verified"
+        },
+        {
+          "id": "SK004",
+          "technology": "AWS",
+          "rating": 4,
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "EMP002",
+      "name": "Jane Smith",
+      "designation": "Product Manager",
+      "department": "Product",
+      "email": "jane.smith@aganitha.com",
+      "phone": "+1-555-0102",
+      "location": "New York, NY",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane",
+      "reportingTo": "Sarah Williams",
+      "joinDate": "2021-06-10",
+      "status": "exit-initiated",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "exitDate": "2025-01-15",
+      "exitReason": "Pursuing other opportunities",
+      "skills": [
+        {
+          "id": "SK005",
+          "technology": "Product Strategy",
+          "rating": 5,
+          "status": "verified"
+        },
+        {
+          "id": "SK006",
+          "technology": "Data Analytics",
+          "rating": 4,
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "EMP003",
+      "name": "Mike Johnson",
+      "designation": "UI/UX Designer",
+      "department": "Design",
+      "email": "mike.johnson@aganitha.com",
+      "phone": "+1-555-0103",
+      "location": "Austin, TX",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
+      "reportingTo": "Sarah Williams",
+      "joinDate": "2023-01-20",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 60,
+      "skills": [
+        {
+          "id": "SK007",
+          "technology": "UI/UX Design",
+          "rating": 5,
+          "status": "verified"
+        },
+        {
+          "id": "SK008",
+          "technology": "Figma",
+          "rating": 5,
+          "status": "verified"
+        },
+        {
+          "id": "SK009",
+          "technology": "Prototyping",
+          "rating": 4,
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "EMP004",
+      "name": "Sarah Williams",
+      "designation": "HR Manager",
+      "department": "HR",
+      "email": "sarah.williams@aganitha.com",
+      "phone": "+1-555-0104",
+      "location": "Boston, MA",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "reportingTo": "CEO",
+      "joinDate": "2020-05-01",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {
+          "id": "SK010",
+          "technology": "HR Management",
+          "rating": 5,
+          "status": "verified"
+        },
+        {
+          "id": "SK011",
+          "technology": "Recruitment",
+          "rating": 5,
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "EMP005",
+      "name": "Alice Chen",
+      "designation": "Junior Developer",
+      "department": "Engineering",
+      "email": "alice.chen@aganitha.com",
+      "phone": "+1-555-0105",
+      "location": "San Francisco, CA",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice",
+      "reportingTo": "John Doe",
+      "joinDate": "2025-01-05",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 25,
+      "skills": []
+    },
+    {
+      "id": "EMP006",
+      "name": "Bob Wilson",
+      "designation": "QA Engineer",
+      "department": "Engineering",
+      "email": "bob.wilson@aganitha.com",
+      "phone": "+1-555-0106",
+      "location": "New York, NY",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob",
+      "reportingTo": "John Doe",
+      "joinDate": "2023-06-15",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {
+          "id": "SK012",
+          "technology": "Jest",
+          "rating": 4,
+          "status": "verified"
+        },
+        {
+          "id": "SK013",
+          "technology": "Cypress",
+          "rating": 3,
+          "status": "verified"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "PROJ001",
+      "name": "Project Alpha",
+      "code": "PA-2025",
+      "status": "active",
+      "health": "healthy",
+      "teamSize": 5,
+      "members": ["EMP001", "EMP002"],
+      "budget": 450000,
+      "budgetUsed": 292500,
+      "allocation": 65,
+      "description": "AI-powered analytics platform"
+    },
+    {
+      "id": "PROJ002",
+      "name": "Project Beta",
+      "code": "PB-2025",
+      "status": "active",
+      "health": "at-risk",
+      "teamSize": 3,
+      "members": ["EMP002", "EMP003"],
+      "budget": 320000,
+      "budgetUsed": 278400,
+      "allocation": 87,
+      "description": "Mobile app redesign"
+    },
+    {
+      "id": "PROJ003",
+      "name": "Project Gamma",
+      "code": "PG-2025",
+      "status": "active",
+      "health": "healthy",
+      "teamSize": 4,
+      "members": ["EMP001", "EMP003"],
+      "budget": 380000,
+      "budgetUsed": 171000,
+      "allocation": 45,
+      "description": "Cloud migration initiative"
+    },
+    {
+      "id": "PROJ004",
+      "name": "Project Delta",
+      "code": "PD-2024",
+      "status": "paused",
+      "health": "healthy",
+      "teamSize": 2,
+      "members": ["EMP002"],
+      "budget": 250000,
+      "budgetUsed": 75000,
+      "allocation": 30,
+      "description": "Legacy system modernization"
+    }
+  ],
+  "currentUser": {
+    "id": "EMP001",
+    "name": "John Doe",
+    "role": "employee",
+    "designation": "Senior Software Engineer",
+    "department": "Engineering",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+  },
+  "reports": [
+    {
+      "id": "REPORT001",
+      "employeeId": "EMP001",
+      "week": "2025-01-03",
+      "summary": "Completed React components for dashboard. Reviewed team PRs and mentored junior developer. Started AWS migration planning.",
+      "sentiment": "positive"
+    },
+    {
+      "id": "REPORT002",
+      "employeeId": "EMP002",
+      "week": "2025-01-03",
+      "summary": "Product roadmap finalized for Q1. Conducted user research interviews. Identified potential features for Project Beta.",
+      "sentiment": "positive"
+    },
+    {
+      "id": "REPORT003",
+      "employeeId": "EMP003",
+      "week": "2025-01-03",
+      "summary": "Design system documentation updated. Conducted design review for new UI components. Prototype for mobile app completed.",
+      "sentiment": "positive"
+    }
+  ],
+  "organizationSkills": [
+    {
+      "name": "React",
+      "count": 4,
+      "avgRating": 4.2,
+      "trend": "up-high",
+      "experts": ["EMP001", "EMP003"]
+    },
+    {
+      "name": "TypeScript",
+      "count": 3,
+      "avgRating": 3.8,
+      "trend": "up-high",
+      "experts": ["EMP001"]
+    },
+    {
+      "name": "Node.js",
+      "count": 3,
+      "avgRating": 4.5,
+      "trend": "up",
+      "experts": ["EMP001", "EMP006"]
+    },
+    {
+      "name": "PostgreSQL",
+      "count": 2,
+      "avgRating": 3.7,
+      "trend": "stable",
+      "experts": []
+    },
+    {
+      "name": "AWS",
+      "count": 2,
+      "avgRating": 3.8,
+      "trend": "up",
+      "experts": ["EMP001"]
+    },
+    {
+      "name": "Docker",
+      "count": 2,
+      "avgRating": 3.5,
+      "trend": "up-high",
+      "experts": []
+    },
+    {
+      "name": "Python",
+      "count": 1,
+      "avgRating": 3.5,
+      "trend": "stable",
+      "experts": []
+    },
+    {
+      "name": "Kubernetes",
+      "count": 1,
+      "avgRating": 3.0,
+      "trend": "up-high",
+      "experts": []
+    },
+    {
+      "name": "GraphQL",
+      "count": 1,
+      "avgRating": 3.5,
+      "trend": "up",
+      "experts": []
+    },
+    {
+      "name": "Figma",
+      "count": 2,
+      "avgRating": 4.8,
+      "trend": "up-high",
+      "experts": ["EMP003"]
+    }
+  ],
+  "departmentStats": [
+    {
+      "name": "Engineering",
+      "total": 3,
+      "bench": 1,
+      "allocated": 2,
+      "utilization": 67
+    },
+    {
+      "name": "Product",
+      "total": 1,
+      "bench": 0,
+      "allocated": 1,
+      "utilization": 100
+    },
+    {
+      "name": "Design",
+      "total": 1,
+      "bench": 0,
+      "allocated": 1,
+      "utilization": 100
+    },
+    { "name": "HR", "total": 1, "bench": 0, "allocated": 1, "utilization": 100 }
+  ]
+}
