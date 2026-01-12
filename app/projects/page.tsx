@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/hooks/use-data";
+import { ProjectDetailModal } from "@/components/modals";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Users, TrendingUp } from "lucide-react";
@@ -15,6 +16,8 @@ function ProjectsContent() {
   const [currentRole, setCurrentRole] = useState<"employee" | "manager" | "hr">(
     "employee"
   );
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   useEffect(() => {
     const roleParam = searchParams.get("role");
@@ -109,25 +112,6 @@ function ProjectsContent() {
                   </span>
                 </div>
 
-                {/* Budget Progress */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Budget</span>
-                    <span className="font-semibold">
-                      ${project.budgetUsed.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="bg-muted rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all"
-                      style={{ width: `${project.allocation}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {project.allocation}% of budget used
-                  </p>
-                </div>
-
                 {/* Allocation */}
                 <div className="flex items-center gap-2">
                   <TrendingUp size={16} className="text-muted-foreground" />
@@ -136,13 +120,33 @@ function ProjectsContent() {
                   </span>
                 </div>
 
-                <Button variant="outline" className="w-full bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent"
+                  onClick={() => {
+                    setSelectedProject(project);
+                    setIsProjectModalOpen(true);
+                  }}
+                >
                   View Details
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {/* Project Detail Modal */}
+        <ProjectDetailModal
+          project={selectedProject}
+          isOpen={isProjectModalOpen}
+          onClose={() => {
+            setIsProjectModalOpen(false);
+            setSelectedProject(null);
+          }}
+          canEdit={currentRole === "manager"}
+          allocations={data.project_allocations || []}
+          employees={data.employees || []}
+        />
       </div>
     </DashboardLayout>
   );

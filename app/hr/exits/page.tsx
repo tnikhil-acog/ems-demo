@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee } from "@/hooks/use-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LogOut,
@@ -28,18 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Employee {
-  id: string;
-  name: string;
-  designation: string;
-  department: string;
-  location?: string;
-  status: string;
-  exitDate?: string;
-  exitReason?: string;
-  reportingTo?: string;
-}
 
 interface ChecklistItem {
   id: string;
@@ -101,7 +89,8 @@ export default function ExitManagement() {
     (emp) => emp.status === "exit-initiated"
   );
   const exitedEmployees = employees.filter((emp) => emp.status === "exited");
-  const archivedExits = employees.filter((emp) => emp.status === "archived");
+  // Note: "archived" status doesn't exist in the current schema
+  // const archivedExits = employees.filter((emp) => emp.status === "archived");
 
   // Calculate stats
   const inProgressCount = inProgressExits.length;
@@ -433,17 +422,14 @@ export default function ExitManagement() {
         </CardContent>
       </Card>
 
-      {/* Tabs for In Progress / Exited / Archived */}
+      {/* Tabs for In Progress / Exited */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="in-progress">
             In Progress ({filterExits(inProgressExits).length})
           </TabsTrigger>
           <TabsTrigger value="exited">
             Exited ({filterExits(exitedEmployees).length})
-          </TabsTrigger>
-          <TabsTrigger value="archived">
-            Archived ({filterExits(archivedExits).length})
           </TabsTrigger>
         </TabsList>
 
@@ -478,22 +464,6 @@ export default function ExitManagement() {
             </Card>
           ) : (
             filterExits(exitedEmployees).map((emp) => renderExitCard(emp))
-          )}
-        </TabsContent>
-
-        <TabsContent value="archived" className="space-y-4">
-          {filterExits(archivedExits).length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <LogOut
-                  size={48}
-                  className="mx-auto mb-4 text-muted-foreground opacity-20"
-                />
-                <p className="text-muted-foreground">No archived exits.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            filterExits(archivedExits).map((emp) => renderExitCard(emp))
           )}
         </TabsContent>
       </Tabs>

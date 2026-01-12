@@ -1,42 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useData } from "@/hooks/use-data";
+import { QuickStats } from "@/components/manager";
+import {
+  OnboardingList,
+  OnboardingEmployee,
+  ExitList,
+  ExitEmployee,
+  TopSkillsList,
+  SkillWithEmployees,
+  DepartmentSummary,
+  DepartmentStats,
+} from "@/components/hr";
+import { useData, Employee } from "@/hooks/use-data";
 import {
   Users,
-  AlertCircle,
-  Plus,
-  LogOut,
-  Upload,
-  BarChart3,
-  Clock,
-  TrendingUp,
+  UserPlus,
+  UserX,
   Star,
-  CheckCircle,
-  AlertTriangle,
-  ArrowUp,
-  ArrowRight,
+  TrendingUp,
+  Download,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-
-interface Employee {
-  id: string;
-  name: string;
-  designation: string;
-  department: string;
-  status: string;
-  joinDate: string;
-  exitDate?: string;
-  onboardingProgress?: number;
-  skills?: Array<{ technology: string; rating: number }>;
-}
+import Link from "next/link";
+import {
+  exportEmployeesCSV,
+  exportProjectsCSV,
+  exportAllocationsCSV,
+} from "@/lib/csv-export";
 
 export default function HRDashboard() {
   const { data, loading } = useData();
-  const [expandedSkill, setExpandedSkill] = useState<string | null>(null);
 
   if (loading || !data) {
     return (
@@ -51,518 +46,328 @@ export default function HRDashboard() {
     );
   }
 
-  // Calculate stats
-  const activeEmployees = data.employees.filter(
-    (emp: Employee) => emp.status === "active"
+  const employees: Employee[] = data.employees || [];
+  const activeEmployees = employees.filter(
+    (emp) => emp.status === "active"
   ).length;
-  const newHires = data.employees.filter((emp: Employee) => {
+
+  const newHires = employees.filter((emp) => {
     const joinDate = new Date(emp.joinDate);
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
     return joinDate > threeMonthsAgo && emp.status === "active";
   }).length;
-  const exitPipeline = data.employees.filter(
-    (emp: Employee) => emp.status === "exit-initiated"
+
+  const onBench = employees.filter(
+    (emp) => emp.status === "active" && (!emp.skills || emp.skills.length === 0)
   ).length;
 
-  const incompleteProfiles = data.employees.filter(
-    (emp: Employee) => emp.onboardingProgress !== 100
-  );
+  const exitPipeline = employees.filter(
+    (emp) => emp.status === "exit-initiated"
+  ).length;
 
-  const daysUntilNextExit = (emp: Employee) => {
-    if (!emp.exitDate) return null;
-    const exitDate = new Date(emp.exitDate);
-    const today = new Date();
-    const diffTime = exitDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+  const incompleteProfiles: OnboardingEmployee[] = employees
+    .filter((emp) => (emp.onboardingProgress || 0) < 100)
+    .map((emp) => ({
+      id: emp.id,
+      name: emp.name,
+      designation: emp.designation,
+      joinDate: emp.joinDate,
+      onboardingProgress: emp.onboardingProgress || 0,
+    }));
 
-  const getTrendIcon = (trend: string) => {
-    if (trend.includes("up-high"))
-      return <ArrowUp className="w-4 h-4 text-green-600" />;
-    if (trend.includes("up"))
-      return <ArrowUp className="w-4 h-4 text-blue-500" />;
-    return <ArrowRight className="w-4 h-4 text-gray-500" />;
-  };
+  const exitsInProgress: ExitEmployee[] = employees
+    .filter((emp) => emp.status === "exit-initiated")
+    .map((emp) => ({
+      id: emp.id,
+      name: emp.name,
+      designation: emp.designation,
+      department: emp.department,
+      exitDate: emp.exitDate,
+      exitInitiatedDate: emp.exitInitiatedDate,
+      currentProjects: ["Project A", "Project B"],
+    }));
 
-  const getTrendLabel = (trend: string) => {
-    if (trend.includes("up-high")) return "High Demand ↑↑";
-    if (trend.includes("up")) return "Growing ↑";
-    return "Stable →";
-  };
+  const skillsMap = new Map<
+    string,
+    {
+      employees: Array<{ id: string; name: string; rating: number }>;
+      ratings: number[];
+    }
+  >();
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className="text-sm">
-            {star <= rating ? "★" : "☆"}
-          </span>
-        ))}
-      </div>
+  employees.forEach((emp) => {
+    if (emp.skills) {
+      emp.skills.forEach((skill) => {
+        if (!skillsMap.has(skill.technology)) {
+          skillsMap.set(skill.technology, { employees: [], ratings: [] });
+        }
+        const skillData = skillsMap.get(skill.technology)!;
+        skillData.employees.push({
+          id: emp.id,
+          name: emp.name,
+          rating: skill.rating,
+        });
+        skillData.ratings.push(skill.rating);
+      });
+    }
+  });
+
+  const topSkills: SkillWithEmployees[] = Array.from(skillsMap.entries())
+    .map(([skill, data]) => ({
+      skill,
+      employeeCount: data.employees.length,
+      avgRating: data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length,
+      trend: (data.employees.length > 20
+        ? "up-high"
+        : data.employees.length > 15
+        ? "up"
+        : "stable") as "up-high" | "up" | "stable",
+      employees: data.employees,
+    }))
+    .sort((a, b) => b.employeeCount - a.employeeCount)
+    .slice(0, 6);
+
+  const departmentsMap = new Map<string, Employee[]>();
+  employees
+    .filter((emp) => emp.status === "active")
+    .forEach((emp) => {
+      if (!departmentsMap.has(emp.department)) {
+        departmentsMap.set(emp.department, []);
+      }
+      departmentsMap.get(emp.department)!.push(emp);
+    });
+
+  // Calculate utilization from actual allocations
+  const allocations = data.project_allocations || [];
+  const departmentStats: DepartmentStats[] = Array.from(
+    departmentsMap.entries()
+  ).map(([dept, emps]) => {
+    const deptAllocations = allocations.filter((alloc: any) =>
+      emps.some((emp) => emp.id === alloc.emp_id)
     );
-  };
+    const totalAllocation = deptAllocations.reduce(
+      (sum: number, alloc: any) => sum + alloc.allocation_percentage,
+      0
+    );
+    const avgUtilization =
+      emps.length > 0 ? Math.round(totalAllocation / emps.length) : 0;
+    return {
+      department: dept,
+      employeeCount: emps.length,
+      utilization: avgUtilization,
+      onBench: emps.filter((e) => !e.skills || e.skills.length === 0).length,
+      trend: "stable" as const,
+    };
+  });
+
+  const statsData = [
+    {
+      title: "Active Employees",
+      value: activeEmployees,
+      icon: Users,
+      variant: "default" as const,
+    },
+    {
+      title: "New Hires (Q1 2026)",
+      value: newHires,
+      icon: UserPlus,
+      variant: "success" as const,
+    },
+    {
+      title: "On Bench",
+      value: onBench,
+      icon: Users,
+      variant: onBench > 10 ? ("warning" as const) : ("default" as const),
+    },
+    {
+      title: "Exits Pending",
+      value: exitPipeline,
+      icon: UserX,
+      variant: exitPipeline > 5 ? ("danger" as const) : ("default" as const),
+    },
+  ];
 
   return (
     <DashboardLayout role="hr" title="HR Dashboard" currentPath="/hr">
       <div className="space-y-6">
-        {/* QUICK STATS SECTION */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-blue-600 mb-2">
-                  {activeEmployees}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Total Active Employees
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Status: All employment types
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold">HR Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
+              Welcome to the HR Command Center
+            </p>
+          </div>
 
-          <Card className="border-l-4 border-l-green-500">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-green-600 mb-2">
-                  {newHires}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  New Hires (Q1 2025)
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {newHires} onboarded, {incompleteProfiles.length} pending
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-orange-500">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-orange-600 mb-2">
-                  {
-                    data.employees.filter(
-                      (e: Employee) => e.skills && e.skills.length === 0
-                    ).length
-                  }
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Bench / Available
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Resources available for allocation
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-red-500">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-red-600 mb-2">
-                  {exitPipeline}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Exit Pipeline
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Employees in exit process
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Export Buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportEmployeesCSV(employees)}
+              className="gap-2"
+            >
+              <Download size={16} />
+              Export Employees
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportProjectsCSV(data.projects || [])}
+              className="gap-2"
+            >
+              <Download size={16} />
+              Export Projects
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportAllocationsCSV(
+                  data.project_allocations || [],
+                  employees,
+                  data.projects || []
+                )
+              }
+              className="gap-2"
+            >
+              <Download size={16} />
+              Export Allocations
+            </Button>
+          </div>
         </div>
 
-        {/* PRIMARY CONTENT: TWO COLUMN LAYOUT */}
+        <QuickStats stats={statsData} />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* LEFT COLUMN: ONBOARDING TRACKER */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users size={20} />
-                Onboarding Tracker
-              </CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                  <UserPlus size={20} />
+                  Onboarding Tracker
+                </CardTitle>
+                <Link href="/hr/onboarding">
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
+                </Link>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">
                 New employees completing profile setup
               </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {incompleteProfiles.length > 0 ? (
-                <>
-                  <div className="text-sm font-medium text-foreground">
-                    Incomplete Profiles: {incompleteProfiles.length}
-                  </div>
-                  {incompleteProfiles.map((emp: Employee) => {
-                    const daysSinceJoin = Math.floor(
-                      (new Date().getTime() -
-                        new Date(emp.joinDate).getTime()) /
-                        (1000 * 60 * 60 * 24)
-                    );
-                    const isOverdue = daysSinceJoin > 30;
-
-                    return (
-                      <div
-                        key={emp.id}
-                        className="border rounded-lg p-3 space-y-2"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="font-medium text-sm">{emp.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Joining Date:{" "}
-                              {new Date(emp.joinDate).toLocaleDateString()}
-                            </p>
-                          </div>
-                          {isOverdue && (
-                            <AlertTriangle className="w-4 h-4 text-orange-500" />
-                          )}
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-medium">
-                              Progress
-                            </span>
-                            <span className="text-xs font-bold text-primary">
-                              {emp.onboardingProgress}%
-                            </span>
-                          </div>
-                          <div className="bg-muted rounded-full h-2">
-                            <div
-                              className={`h-2 rounded-full transition-all ${
-                                emp.onboardingProgress === 100
-                                  ? "bg-green-500"
-                                  : "bg-blue-500"
-                              }`}
-                              style={{
-                                width: `${emp.onboardingProgress}%`,
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-
-                        <div className="text-xs text-muted-foreground">
-                          Days Since Joining: {daysSinceJoin}
-                          {isOverdue && (
-                            <span className="ml-2 font-medium text-orange-600">
-                              ⚠ OVERDUE
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2 pt-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-xs flex-1"
-                          >
-                            Send Reminder
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-xs flex-1"
-                          >
-                            View Profile
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <Button variant="outline" className="w-full text-xs">
-                    View All Onboarding
-                  </Button>
-                </>
-              ) : (
-                <div className="text-center py-6 text-muted-foreground">
-                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-sm">All employees completed onboarding!</p>
-                </div>
-              )}
+            <CardContent>
+              <OnboardingList
+                employees={incompleteProfiles}
+                maxDisplay={3}
+                showViewAll={false}
+              />
             </CardContent>
           </Card>
 
-          {/* RIGHT COLUMN: EXIT PIPELINE */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LogOut size={20} />
-                Exit Pipeline Management
-              </CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                  <UserX size={20} />
+                  Exit Pipeline
+                </CardTitle>
+                <Link href="/hr/exits">
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
+                </Link>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">
                 Employees in departure process
               </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {exitPipeline > 0 ? (
-                <>
-                  <div className="text-sm font-medium text-foreground">
-                    Total in Pipeline: {exitPipeline}
-                  </div>
-                  {data.employees
-                    .filter((emp: Employee) => emp.status === "exit-initiated")
-                    .map((emp: Employee) => {
-                      const daysLeft = daysUntilNextExit(emp);
-                      return (
-                        <div
-                          key={emp.id}
-                          className="border rounded-lg p-3 space-y-2"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="font-medium text-sm">{emp.name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {emp.designation} • {emp.department}
-                              </p>
-                            </div>
-                            <Badge className="bg-orange-100 text-orange-800">
-                              Exit Initiated
-                            </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div>
-                              <p className="text-muted-foreground">
-                                Last Working Day
-                              </p>
-                              <p className="font-medium text-foreground">
-                                {emp.exitDate
-                                  ? new Date(emp.exitDate).toLocaleDateString()
-                                  : "N/A"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground">
-                                Days Remaining
-                              </p>
-                              <p className="font-medium text-red-600">
-                                {daysLeft} days
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="bg-muted rounded-full h-2">
-                            <div
-                              className="bg-orange-500 h-2 rounded-full"
-                              style={{ width: "50%" }}
-                            ></div>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            Exit Checklist: 50% Complete
-                          </p>
-
-                          <div className="flex gap-2 pt-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs flex-1"
-                            >
-                              View Details
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs flex-1"
-                            >
-                              Update Status
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  <Button variant="outline" className="w-full text-xs">
-                    Manage All Exits
-                  </Button>
-                </>
-              ) : (
-                <div className="text-center py-6 text-muted-foreground">
-                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-sm">No employees in exit process</p>
-                </div>
-              )}
+            <CardContent>
+              <ExitList
+                employees={exitsInProgress}
+                maxDisplay={3}
+                showViewAll={false}
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* DEPARTMENT ANALYTICS */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 size={20} />
-              Department Analytics
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-2">
-              Workforce distribution and utilization
-            </p>
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp size={20} />
+                Department Analytics
+              </CardTitle>
+              <Link href="/hr/analytics">
+                <Button variant="outline" size="sm">
+                  View Analytics
+                </Button>
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {data.departmentStats?.map(
-                (dept: {
-                  name: string;
-                  total: number;
-                  bench: number;
-                  allocated: number;
-                  utilization: number;
-                }) => (
-                  <div key={dept.name}>
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <p className="font-medium text-sm">{dept.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {dept.total} total • {dept.bench} on bench •{" "}
-                          {dept.allocated} allocated
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-sm">{dept.utilization}%</p>
-                        <p className="text-xs text-muted-foreground">
-                          utilization
-                        </p>
-                      </div>
-                    </div>
-                    <div className="bg-muted rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all ${
-                          dept.utilization > 90
-                            ? "bg-green-500"
-                            : dept.utilization > 75
-                            ? "bg-blue-500"
-                            : "bg-orange-500"
-                        }`}
-                        style={{
-                          width: `${dept.utilization}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
+            <DepartmentSummary
+              departments={departmentStats}
+              variant="horizontal"
+            />
           </CardContent>
         </Card>
 
-        {/* TOP SKILLS INVENTORY */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star size={20} />
-              Top Skills (Organizational)
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-2">
-              Most common competencies and trending skills
-            </p>
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center gap-2">
+                <Star size={20} />
+                Top Skills in Organization
+              </CardTitle>
+              <Link href="/hr/skills">
+                <Button variant="outline" size="sm">
+                  View All Skills
+                </Button>
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {data.organizationSkills?.slice(0, 10).map(
-                (
-                  skill: {
-                    name: string;
-                    count: number;
-                    avgRating: number;
-                    trend: string;
-                    experts: string[];
-                  },
-                  index: number
-                ) => (
-                  <div key={skill.name}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-muted-foreground w-6">
-                          {index + 1}
-                        </span>
-                        <div>
-                          <p className="font-medium text-sm">{skill.name}</p>
-                          <div className="flex gap-3 text-xs text-muted-foreground">
-                            <span>{skill.count} employees</span>
-                            <span className="flex items-center gap-1">
-                              {renderStars(Math.round(skill.avgRating))}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 text-xs font-medium">
-                        {getTrendIcon(skill.trend)}
-                        {getTrendLabel(skill.trend)}
-                      </div>
-                    </div>
-                    <div className="bg-muted rounded-full h-2 mb-2">
-                      <div
-                        className="bg-primary h-2 rounded-full"
-                        style={{
-                          width: `${(skill.count / 5) * 100}%`,
-                        }}
-                      ></div>
-                    </div>
-
-                    <button
-                      onClick={() =>
-                        setExpandedSkill(
-                          expandedSkill === skill.name ? null : skill.name
-                        )
-                      }
-                      className="text-xs text-primary hover:underline"
-                    >
-                      {expandedSkill === skill.name ? "Hide" : "Show"} details
-                    </button>
-
-                    {expandedSkill === skill.name && (
-                      <div className="mt-2 p-2 bg-muted rounded text-xs space-y-1">
-                        {skill.experts.length > 0 ? (
-                          <>
-                            <p className="font-medium">Experts:</p>
-                            <ul className="list-disc list-inside">
-                              {skill.experts.map((expertId: string) => {
-                                const expert = data.employees.find(
-                                  (e: Employee) => e.id === expertId
-                                );
-                                return <li key={expertId}>{expert?.name}</li>;
-                              })}
-                            </ul>
-                          </>
-                        ) : (
-                          <p className="text-muted-foreground">
-                            No experts available yet
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )
-              )}
-            </div>
+            <TopSkillsList
+              skills={topSkills}
+              maxDisplay={6}
+              expandable={false}
+            />
           </CardContent>
         </Card>
 
-        {/* QUICK ACTIONS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <Button className="h-12 bg-cyan-500 hover:bg-cyan-600 text-white flex items-center justify-center gap-2 font-semibold">
-            <Plus size={20} />
-            <span className="hidden sm:inline">Add New Employee</span>
-            <span className="sm:hidden">Add Employee</span>
-          </Button>
-          <Button className="h-12 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center gap-2 font-semibold">
-            <LogOut size={20} />
-            <span className="hidden sm:inline">Initiate Exit</span>
-            <span className="sm:hidden">Exit Process</span>
-          </Button>
-          <Button className="h-12 bg-gray-700 hover:bg-gray-800 text-white flex items-center justify-center gap-2 font-semibold">
-            <Upload size={20} />
-            <span className="hidden sm:inline">Bulk Import</span>
-            <span className="sm:hidden">Import</span>
-          </Button>
-          <Button className="h-12 bg-gray-700 hover:bg-gray-800 text-white flex items-center justify-center gap-2 font-semibold">
-            <BarChart3 size={20} />
-            <span className="hidden sm:inline">Generate Report</span>
-            <span className="sm:hidden">Report</span>
-          </Button>
-        </div>
+        {/* Weekly Report Submission */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp size={20} />
+              Weekly Report Submission
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Submit a consolidated report of your work across HR activities
+                this week
+              </p>
+              <p className="text-xs text-muted-foreground mb-4">
+                Last submitted: January 3, 2026
+              </p>
+            </div>
+            <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200 mb-4">
+              <span className="text-xs font-semibold text-amber-700">
+                Due Friday
+              </span>
+            </div>
+            <Link href="/hr/reports">
+              <Button className="w-full bg-primary hover:bg-primary/90">
+                Write This Week's Report
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

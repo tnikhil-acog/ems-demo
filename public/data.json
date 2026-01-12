@@ -8,37 +8,16 @@
       "email": "john.doe@aganitha.com",
       "phone": "+1-555-0101",
       "location": "San Francisco, CA",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-      "reportingTo": "Sarah Williams",
+      "reportingTo": "EMP005",
       "joinDate": "2022-03-15",
       "status": "active",
       "employmentType": "Full-time",
       "onboardingProgress": 100,
       "skills": [
-        {
-          "id": "SK001",
-          "technology": "React",
-          "rating": 4,
-          "status": "verified"
-        },
-        {
-          "id": "SK002",
-          "technology": "Node.js",
-          "rating": 5,
-          "status": "verified"
-        },
-        {
-          "id": "SK003",
-          "technology": "TypeScript",
-          "rating": 3,
-          "status": "verified"
-        },
-        {
-          "id": "SK004",
-          "technology": "AWS",
-          "rating": 4,
-          "status": "verified"
-        }
+        {"id": "SK001", "technology": "React", "rating": 5, "status": "verified"},
+        {"id": "SK002", "technology": "Node.js", "rating": 5, "status": "verified"},
+        {"id": "SK003", "technology": "TypeScript", "rating": 4, "status": "verified"},
+        {"id": "SK004", "technology": "AWS", "rating": 4, "status": "verified"}
       ]
     },
     {
@@ -49,27 +28,17 @@
       "email": "jane.smith@aganitha.com",
       "phone": "+1-555-0102",
       "location": "New York, NY",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane",
-      "reportingTo": "Sarah Williams",
+      "reportingTo": "EMP005",
       "joinDate": "2021-06-10",
       "status": "exit-initiated",
       "employmentType": "Full-time",
       "onboardingProgress": 100,
-      "exitDate": "2025-01-15",
+      "exitDate": "2026-02-15",
+      "exitInitiatedDate": "2026-01-05",
       "exitReason": "Pursuing other opportunities",
       "skills": [
-        {
-          "id": "SK005",
-          "technology": "Product Strategy",
-          "rating": 5,
-          "status": "verified"
-        },
-        {
-          "id": "SK006",
-          "technology": "Data Analytics",
-          "rating": 4,
-          "status": "verified"
-        }
+        {"id": "SK005", "technology": "Product Strategy", "rating": 5, "status": "verified"},
+        {"id": "SK006", "technology": "Data Analytics", "rating": 4, "status": "verified"}
       ]
     },
     {
@@ -80,287 +49,395 @@
       "email": "mike.johnson@aganitha.com",
       "phone": "+1-555-0103",
       "location": "Austin, TX",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
-      "reportingTo": "Sarah Williams",
+      "reportingTo": "EMP009",
       "joinDate": "2023-01-20",
       "status": "active",
       "employmentType": "Full-time",
       "onboardingProgress": 60,
       "skills": [
-        {
-          "id": "SK007",
-          "technology": "UI/UX Design",
-          "rating": 5,
-          "status": "verified"
-        },
-        {
-          "id": "SK008",
-          "technology": "Figma",
-          "rating": 5,
-          "status": "verified"
-        },
-        {
-          "id": "SK009",
-          "technology": "Prototyping",
-          "rating": 4,
-          "status": "verified"
-        }
+        {"id": "SK007", "technology": "UI/UX Design", "rating": 5, "status": "verified"},
+        {"id": "SK008", "technology": "Figma", "rating": 5, "status": "verified"},
+        {"id": "SK009", "technology": "Prototyping", "rating": 4, "status": "verified"}
       ]
     },
     {
       "id": "EMP004",
-      "name": "Sarah Williams",
-      "designation": "HR Manager",
-      "department": "HR",
-      "email": "sarah.williams@aganitha.com",
+      "name": "Sarah Wilson",
+      "designation": "Backend Engineer",
+      "department": "Engineering",
+      "email": "sarah.wilson@aganitha.com",
       "phone": "+1-555-0104",
       "location": "Boston, MA",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-      "reportingTo": "CEO",
-      "joinDate": "2020-05-01",
+      "reportingTo": "EMP005",
+      "joinDate": "2022-08-10",
       "status": "active",
       "employmentType": "Full-time",
       "onboardingProgress": 100,
       "skills": [
-        {
-          "id": "SK010",
-          "technology": "HR Management",
-          "rating": 5,
-          "status": "verified"
-        },
-        {
-          "id": "SK011",
-          "technology": "Recruitment",
-          "rating": 5,
-          "status": "verified"
-        }
+        {"id": "SK010", "technology": "Python", "rating": 5, "status": "verified"},
+        {"id": "SK011", "technology": "PostgreSQL", "rating": 4, "status": "verified"},
+        {"id": "SK012", "technology": "Docker", "rating": 4, "status": "verified"}
       ]
     },
     {
       "id": "EMP005",
-      "name": "Alice Chen",
-      "designation": "Junior Developer",
+      "name": "Robert Chen",
+      "designation": "VP of Engineering",
       "department": "Engineering",
-      "email": "alice.chen@aganitha.com",
+      "email": "robert.chen@aganitha.com",
       "phone": "+1-555-0105",
       "location": "San Francisco, CA",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice",
-      "reportingTo": "John Doe",
-      "joinDate": "2025-01-05",
-      "status": "active",
-      "employmentType": "Full-time",
-      "onboardingProgress": 25,
-      "skills": []
-    },
-    {
-      "id": "EMP006",
-      "name": "Bob Wilson",
-      "designation": "QA Engineer",
-      "department": "Engineering",
-      "email": "bob.wilson@aganitha.com",
-      "phone": "+1-555-0106",
-      "location": "New York, NY",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob",
-      "reportingTo": "John Doe",
-      "joinDate": "2023-06-15",
+      "reportingTo": null,
+      "joinDate": "2020-01-15",
       "status": "active",
       "employmentType": "Full-time",
       "onboardingProgress": 100,
       "skills": [
-        {
-          "id": "SK012",
-          "technology": "Jest",
-          "rating": 4,
-          "status": "verified"
-        },
-        {
-          "id": "SK013",
-          "technology": "Cypress",
-          "rating": 3,
-          "status": "verified"
-        }
+        {"id": "SK013", "technology": "Leadership", "rating": 5, "status": "verified"},
+        {"id": "SK014", "technology": "System Design", "rating": 5, "status": "verified"}
+      ]
+    },
+    {
+      "id": "EMP006",
+      "name": "Emily Davis",
+      "designation": "QA Engineer",
+      "department": "Engineering",
+      "email": "emily.davis@aganitha.com",
+      "phone": "+1-555-0106",
+      "location": "Seattle, WA",
+      "reportingTo": "EMP005",
+      "joinDate": "2023-03-01",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 75,
+      "skills": [
+        {"id": "SK015", "technology": "Jest", "rating": 4, "status": "verified"},
+        {"id": "SK016", "technology": "Cypress", "rating": 4, "status": "verified"}
+      ]
+    },
+    {
+      "id": "EMP007",
+      "name": "David Martinez",
+      "designation": "DevOps Engineer",
+      "department": "Engineering",
+      "email": "david.martinez@aganitha.com",
+      "phone": "+1-555-0107",
+      "location": "Denver, CO",
+      "reportingTo": "EMP005",
+      "joinDate": "2021-11-10",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {"id": "SK017", "technology": "Kubernetes", "rating": 5, "status": "verified"},
+        {"id": "SK018", "technology": "Docker", "rating": 5, "status": "verified"},
+        {"id": "SK019", "technology": "AWS", "rating": 4, "status": "verified"}
+      ]
+    },
+    {
+      "id": "EMP008",
+      "name": "Lisa Anderson",
+      "designation": "Product Designer",
+      "department": "Design",
+      "email": "lisa.anderson@aganitha.com",
+      "phone": "+1-555-0108",
+      "location": "Los Angeles, CA",
+      "reportingTo": "EMP009",
+      "joinDate": "2022-05-20",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {"id": "SK020", "technology": "Figma", "rating": 5, "status": "verified"},
+        {"id": "SK021", "technology": "Adobe XD", "rating": 4, "status": "verified"}
+      ]
+    },
+    {
+      "id": "EMP009",
+      "name": "James Wilson",
+      "designation": "Design Lead",
+      "department": "Design",
+      "email": "james.wilson@aganitha.com",
+      "phone": "+1-555-0109",
+      "location": "Chicago, IL",
+      "reportingTo": null,
+      "joinDate": "2020-07-01",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {"id": "SK022", "technology": "Design Leadership", "rating": 5, "status": "verified"},
+        {"id": "SK023", "technology": "User Research", "rating": 5, "status": "verified"}
+      ]
+    },
+    {
+      "id": "EMP010",
+      "name": "Rachel Green",
+      "designation": "HR Manager",
+      "department": "HR",
+      "email": "rachel.green@aganitha.com",
+      "phone": "+1-555-0110",
+      "location": "New York, NY",
+      "reportingTo": null,
+      "joinDate": "2020-04-01",
+      "status": "active",
+      "employmentType": "Full-time",
+      "onboardingProgress": 100,
+      "skills": [
+        {"id": "SK024", "technology": "HR Management", "rating": 5, "status": "verified"}
       ]
     }
   ],
   "projects": [
     {
       "id": "PROJ001",
-      "name": "Project Alpha",
-      "code": "PA-2025",
+      "name": "AI Analytics Platform",
+      "code": "AAP-2025",
       "status": "active",
       "health": "healthy",
+      "type": "P",
       "teamSize": 5,
-      "members": ["EMP001", "EMP002"],
-      "budget": 450000,
-      "budgetUsed": 292500,
-      "allocation": 65,
-      "description": "AI-powered analytics platform"
+      "budget": 850000,
+      "budgetUsed": 425000,
+      "description": "Building an AI-powered analytics platform for predictive insights"
     },
     {
       "id": "PROJ002",
-      "name": "Project Beta",
-      "code": "PB-2025",
+      "name": "Mobile App Redesign",
+      "code": "MAR-2025",
       "status": "active",
       "health": "at-risk",
-      "teamSize": 3,
-      "members": ["EMP002", "EMP003"],
-      "budget": 320000,
-      "budgetUsed": 278400,
-      "allocation": 87,
-      "description": "Mobile app redesign"
+      "type": "M",
+      "teamSize": 4,
+      "budget": 450000,
+      "budgetUsed": 382500,
+      "description": "Complete redesign of mobile application with new UX patterns"
     },
     {
       "id": "PROJ003",
-      "name": "Project Gamma",
-      "code": "PG-2025",
+      "name": "Cloud Infrastructure Migration",
+      "code": "CIM-2025",
       "status": "active",
       "health": "healthy",
-      "teamSize": 4,
-      "members": ["EMP001", "EMP003"],
-      "budget": 380000,
-      "budgetUsed": 171000,
-      "allocation": 45,
-      "description": "Cloud migration initiative"
+      "type": "P",
+      "teamSize": 6,
+      "budget": 1200000,
+      "budgetUsed": 480000,
+      "description": "Migrating legacy systems to AWS cloud infrastructure"
     },
     {
       "id": "PROJ004",
-      "name": "Project Delta",
-      "code": "PD-2024",
+      "name": "API Gateway Modernization",
+      "code": "AGM-2024",
       "status": "paused",
-      "health": "healthy",
+      "health": "blocked",
+      "type": "B",
       "teamSize": 2,
-      "members": ["EMP002"],
-      "budget": 250000,
-      "budgetUsed": 75000,
-      "allocation": 30,
-      "description": "Legacy system modernization"
+      "budget": 290000,
+      "budgetUsed": 145000,
+      "description": "Modernizing API gateway infrastructure"
+    },
+    {
+      "id": "PROJ005",
+      "name": "Customer Portal Enhancement",
+      "code": "CPE-2025",
+      "status": "active",
+      "health": "healthy",
+      "type": "M",
+      "teamSize": 3,
+      "budget": 320000,
+      "budgetUsed": 160000,
+      "description": "Enhancing customer self-service portal with new features"
+    },
+    {
+      "id": "PROJ006",
+      "name": "Security Audit & Compliance",
+      "code": "SAC-2025",
+      "status": "active",
+      "health": "healthy",
+      "type": "S",
+      "teamSize": 2,
+      "budget": 280000,
+      "budgetUsed": 112000,
+      "description": "Comprehensive security audit and compliance measures"
     }
+  ],
+  "project_allocations": [
+    {
+      "allocation_id": "PA001",
+      "emp_id": "EMP001",
+      "project_id": "PROJ001",
+      "allocation_percentage": 60,
+      "date_allocated": "2025-01-10",
+      "period": "Jan 2025 - Jul 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-07-31",
+      "is_lead": true,
+      "dependency_score": 5,
+      "transferable": "Conditional",
+      "is_client_facing": true,
+      "transferability_score": 45
+    },
+    {
+      "allocation_id": "PA002",
+      "emp_id": "EMP001",
+      "project_id": "PROJ003",
+      "allocation_percentage": 30,
+      "date_allocated": "2025-01-15",
+      "period": "Jan 2025 - Jun 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-06-30",
+      "is_lead": false,
+      "dependency_score": 3,
+      "transferable": "Yes",
+      "is_client_facing": false,
+      "transferability_score": 75
+    },
+    {
+      "allocation_id": "PA003",
+      "emp_id": "EMP002",
+      "project_id": "PROJ001",
+      "allocation_percentage": 80,
+      "date_allocated": "2025-01-05",
+      "period": "Jan 2025 - Aug 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-08-31",
+      "is_lead": false,
+      "dependency_score": 4,
+      "transferable": "No",
+      "is_client_facing": true,
+      "transferability_score": 20
+    },
+    {
+      "allocation_id": "PA004",
+      "emp_id": "EMP002",
+      "project_id": "PROJ005",
+      "allocation_percentage": 20,
+      "date_allocated": "2025-01-12",
+      "period": "Jan 2025 - Mar 2025",
+      "utilization_status": "Utilized",
+      "billability": "Non-Billable",
+      "availability_date": "2025-03-31",
+      "is_lead": false,
+      "dependency_score": 2,
+      "transferable": "Yes",
+      "is_client_facing": false,
+      "transferability_score": 80
+    },
+    {
+      "allocation_id": "PA005",
+      "emp_id": "EMP003",
+      "project_id": "PROJ002",
+      "allocation_percentage": 100,
+      "date_allocated": "2024-11-20",
+      "period": "Nov 2024 - May 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-05-31",
+      "is_lead": true,
+      "dependency_score": 5,
+      "transferable": "No",
+      "is_client_facing": true,
+      "transferability_score": 15
+    },
+    {
+      "allocation_id": "PA006",
+      "emp_id": "EMP004",
+      "project_id": "PROJ001",
+      "allocation_percentage": 50,
+      "date_allocated": "2025-01-10",
+      "period": "Jan 2025 - Jul 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-07-31",
+      "is_lead": false,
+      "dependency_score": 4,
+      "transferable": "Conditional",
+      "is_client_facing": false,
+      "transferability_score": 60
+    },
+    {
+      "allocation_id": "PA007",
+      "emp_id": "EMP004",
+      "project_id": "PROJ003",
+      "allocation_percentage": 40,
+      "date_allocated": "2025-01-15",
+      "period": "Jan 2025 - Apr 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-04-30",
+      "is_lead": false,
+      "dependency_score": 3,
+      "transferable": "Yes",
+      "is_client_facing": false,
+      "transferability_score": 70
+    },
+    {
+      "allocation_id": "PA008",
+      "emp_id": "EMP006",
+      "project_id": "PROJ002",
+      "allocation_percentage": 70,
+      "date_allocated": "2025-01-08",
+      "period": "Jan 2025 - Apr 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-04-30",
+      "is_lead": false,
+      "dependency_score": 4,
+      "transferable": "Conditional",
+      "is_client_facing": false,
+      "transferability_score": 55
+    },
+    {
+      "allocation_id": "PA009",
+      "emp_id": "EMP007",
+      "project_id": "PROJ003",
+      "allocation_percentage": 80,
+      "date_allocated": "2025-01-10",
+      "period": "Jan 2025 - Jun 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-06-30",
+      "is_lead": true,
+      "dependency_score": 5,
+      "transferable": "No",
+      "is_client_facing": false,
+      "transferability_score": 25
+    },
+    {
+      "allocation_id": "PA010",
+      "emp_id": "EMP008",
+      "project_id": "PROJ002",
+      "allocation_percentage": 90,
+      "date_allocated": "2024-12-01",
+      "period": "Dec 2024 - May 2025",
+      "utilization_status": "Utilized",
+      "billability": "Billable",
+      "availability_date": "2025-05-31",
+      "is_lead": false,
+      "dependency_score": 5,
+      "transferable": "No",
+      "is_client_facing": true,
+      "transferability_score": 10
+    }
+  ],
+  "reports": [
+    {"id": "REP001", "employeeId": "EMP001", "week": "2026-01-10", "summary": "Completed React component refactoring. Reviewed 8 pull requests. Mentored junior developers on TypeScript. Started authentication module for AI Analytics Platform.", "sentiment": "positive"},
+    {"id": "REP002", "employeeId": "EMP002", "week": "2026-01-10", "summary": "Completed high-level roadmap for Q1. Blocked on design system updates from design team. Coordinated with 3 stakeholders. Updated product documentation.", "sentiment": "neutral"},
+    {"id": "REP003", "employeeId": "EMP003", "week": "2026-01-10", "summary": "Completed high-fidelity mockups for Mobile App. Conducted user testing with 12 participants. Blocked on design system updates. Updated design documentation.", "sentiment": "negative"},
+    {"id": "REP004", "employeeId": "EMP004", "week": "2026-01-10", "summary": "Implemented GraphQL resolvers for new API endpoints. Fixed critical bug in authentication. Code review for 6 PRs. Performance improvements on analytics pipeline.", "sentiment": "positive"},
+    {"id": "REP005", "employeeId": "EMP006", "week": "2026-01-10", "summary": "Completed end-to-end testing for mobile app redesign. Found and documented 8 critical bugs. Setup new testing environment. Automated 15 test cases.", "sentiment": "positive"},
+    {"id": "REP006", "employeeId": "EMP007", "week": "2026-01-10", "summary": "Deployed new Kubernetes cluster. Optimized CI/CD pipeline reducing build time by 40%. Created automated backup scripts. Investigating intermittent production issues.", "sentiment": "neutral"},
+    {"id": "REP007", "employeeId": "EMP008", "week": "2026-01-10", "summary": "Finalized visual design system for mobile app. Collaborated with engineering on design implementation. Created design specs for 20+ components.", "sentiment": "positive"}
   ],
   "currentUser": {
-    "id": "EMP001",
-    "name": "John Doe",
-    "role": "employee",
-    "designation": "Senior Software Engineer",
-    "department": "Engineering",
-    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
-  },
-  "reports": [
-    {
-      "id": "REPORT001",
-      "employeeId": "EMP001",
-      "week": "2025-01-03",
-      "summary": "Completed React components for dashboard. Reviewed team PRs and mentored junior developer. Started AWS migration planning.",
-      "sentiment": "positive"
-    },
-    {
-      "id": "REPORT002",
-      "employeeId": "EMP002",
-      "week": "2025-01-03",
-      "summary": "Product roadmap finalized for Q1. Conducted user research interviews. Identified potential features for Project Beta.",
-      "sentiment": "positive"
-    },
-    {
-      "id": "REPORT003",
-      "employeeId": "EMP003",
-      "week": "2025-01-03",
-      "summary": "Design system documentation updated. Conducted design review for new UI components. Prototype for mobile app completed.",
-      "sentiment": "positive"
-    }
-  ],
-  "organizationSkills": [
-    {
-      "name": "React",
-      "count": 4,
-      "avgRating": 4.2,
-      "trend": "up-high",
-      "experts": ["EMP001", "EMP003"]
-    },
-    {
-      "name": "TypeScript",
-      "count": 3,
-      "avgRating": 3.8,
-      "trend": "up-high",
-      "experts": ["EMP001"]
-    },
-    {
-      "name": "Node.js",
-      "count": 3,
-      "avgRating": 4.5,
-      "trend": "up",
-      "experts": ["EMP001", "EMP006"]
-    },
-    {
-      "name": "PostgreSQL",
-      "count": 2,
-      "avgRating": 3.7,
-      "trend": "stable",
-      "experts": []
-    },
-    {
-      "name": "AWS",
-      "count": 2,
-      "avgRating": 3.8,
-      "trend": "up",
-      "experts": ["EMP001"]
-    },
-    {
-      "name": "Docker",
-      "count": 2,
-      "avgRating": 3.5,
-      "trend": "up-high",
-      "experts": []
-    },
-    {
-      "name": "Python",
-      "count": 1,
-      "avgRating": 3.5,
-      "trend": "stable",
-      "experts": []
-    },
-    {
-      "name": "Kubernetes",
-      "count": 1,
-      "avgRating": 3.0,
-      "trend": "up-high",
-      "experts": []
-    },
-    {
-      "name": "GraphQL",
-      "count": 1,
-      "avgRating": 3.5,
-      "trend": "up",
-      "experts": []
-    },
-    {
-      "name": "Figma",
-      "count": 2,
-      "avgRating": 4.8,
-      "trend": "up-high",
-      "experts": ["EMP003"]
-    }
-  ],
-  "departmentStats": [
-    {
-      "name": "Engineering",
-      "total": 3,
-      "bench": 1,
-      "allocated": 2,
-      "utilization": 67
-    },
-    {
-      "name": "Product",
-      "total": 1,
-      "bench": 0,
-      "allocated": 1,
-      "utilization": 100
-    },
-    {
-      "name": "Design",
-      "total": 1,
-      "bench": 0,
-      "allocated": 1,
-      "utilization": 100
-    },
-    { "name": "HR", "total": 1, "bench": 0, "allocated": 1, "utilization": 100 }
-  ]
+    "id": "EMP005",
+    "name": "Robert Chen",
+    "role": "manager",
+    "designation": "VP of Engineering",
+    "department": "Engineering"
+  }
 }

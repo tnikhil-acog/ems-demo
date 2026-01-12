@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee } from "@/hooks/use-data";
 import {
   Download,
   Users,
@@ -26,6 +26,45 @@ export default function HRAnalytics() {
   const [timeRange, setTimeRange] = useState("quarter");
   const [departmentFilter, setDepartmentFilter] = useState("all");
 
+  // Extract data with safe defaults
+  const employees: Employee[] = data?.employees || [];
+  const departments = Array.from(new Set(employees.map((e) => e.department)));
+  const allocations = data?.project_allocations || [];
+
+  // Generate department stats
+  const departmentStats = useMemo(() => {
+    const deptMap = new Map<string, Employee[]>();
+    employees
+      .filter((e) => e.status === "active")
+      .forEach((emp) => {
+        if (!deptMap.has(emp.department)) {
+          deptMap.set(emp.department, []);
+        }
+        deptMap.get(emp.department)!.push(emp);
+      });
+
+    // Calculate utilization from actual allocations
+    return Array.from(deptMap.entries()).map(([dept, emps]) => {
+      const deptAllocations = allocations.filter((alloc: any) =>
+        emps.some((emp) => emp.id === alloc.emp_id)
+      );
+      const totalAllocation = deptAllocations.reduce(
+        (sum: number, alloc: any) => sum + alloc.allocation_percentage,
+        0
+      );
+      const avgUtilization =
+        emps.length > 0 ? Math.round(totalAllocation / emps.length) : 0;
+      return {
+        department: dept,
+        employeeCount: emps.length,
+        utilization: avgUtilization,
+        onBench: emps.filter((e) => !e.skills || e.skills.length === 0).length,
+        trend: "stable" as const,
+      };
+    });
+  }, [employees, allocations]);
+
+  // Early return AFTER all hooks
   if (loading || !data) {
     return (
       <DashboardLayout
@@ -43,22 +82,14 @@ export default function HRAnalytics() {
     );
   }
 
-  const employees = data.employees || [];
-  const departments = Array.from(
-    new Set(employees.map((e: any) => e.department))
-  );
-  const departmentStats = data.departmentStats || [];
-
   // Calculate metrics
-  const totalHeadcount = employees.filter(
-    (e: any) => e.status === "active"
-  ).length;
-  const newHiresQ1 = employees.filter((e: any) => {
+  const totalHeadcount = employees.filter((e) => e.status === "active").length;
+  const newHiresQ1 = employees.filter((e) => {
     const joinDate = new Date(e.joinDate);
     return joinDate >= new Date("2025-01-01") && e.status === "active";
   }).length;
   const exitsQ1 = employees.filter(
-    (e: any) => e.status === "exit-initiated" || e.status === "exited"
+    (e) => e.status === "exit-initiated" || e.status === "exited"
   ).length;
 
   return (
@@ -263,17 +294,20 @@ export default function HRAnalytics() {
         <CardContent>
           <div className="space-y-4">
             {departmentStats.map((dept: any) => (
-              <div key={dept.name}>
+              <div key={dept.department}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">{dept.name}</span>
+                  <span className="text-sm font-medium">{dept.department}</span>
                   <span className="text-sm text-muted-foreground">
-                    {dept.total} employees • {dept.utilization}% utilization
+                    {dept.employeeCount} employees • {dept.utilization}%
+                    utilization
                   </span>
                 </div>
                 <div className="w-full bg-secondary rounded-full h-2">
                   <div
                     className="bg-blue-500 h-2 rounded-full"
-                    style={{ width: `${(dept.total / totalHeadcount) * 100}%` }}
+                    style={{
+                      width: `${(dept.employeeCount / totalHeadcount) * 100}%`,
+                    }}
                   ></div>
                 </div>
               </div>

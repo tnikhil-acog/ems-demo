@@ -5,8 +5,9 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useData } from "@/hooks/use-data";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useData, Employee } from "@/hooks/use-data";
+import { getInitials } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
@@ -49,8 +50,8 @@ export default function EmployeeProfile({
     );
   }
 
-  const employees = data.employees || [];
-  const employee = employees.find((emp: any) => emp.id === resolvedParams.id);
+  const employees: Employee[] = data.employees || [];
+  const employee = employees.find((emp) => emp.id === resolvedParams.id);
 
   if (!employee) {
     return (
@@ -123,12 +124,8 @@ export default function EmployeeProfile({
             <div className="flex flex-col md:flex-row gap-6">
               {/* Avatar */}
               <Avatar className="h-32 w-32">
-                <AvatarImage src={employee.avatar} alt={employee.name} />
-                <AvatarFallback className="text-3xl">
-                  {employee.name
-                    .split(" ")
-                    .map((n: string) => n[0])
-                    .join("")}
+                <AvatarFallback className="text-3xl font-bold">
+                  {getInitials(employee.name)}
                 </AvatarFallback>
               </Avatar>
 

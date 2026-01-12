@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee } from "@/hooks/use-data";
 import {
   Download,
   TrendingUp,
@@ -40,28 +40,42 @@ export default function SkillsInventory() {
   const [expandedSkill, setExpandedSkill] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("count-desc");
 
-  if (loading || !data) {
-    return (
-      <DashboardLayout
-        role="hr"
-        title="Skills Inventory"
-        currentPath="/hr/skills"
-      >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading skills data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const employees: Employee[] = data?.employees || [];
+  const departments = Array.from(new Set(employees.map((e) => e.department)));
 
-  const organizationSkills: Skill[] = data.organizationSkills || [];
-  const employees = data.employees || [];
-  const departments = Array.from(
-    new Set(employees.map((e: any) => e.department))
-  );
+  // Generate skills from employees
+  const organizationSkills: Skill[] = useMemo(() => {
+    const skillsMap = new Map<
+      string,
+      { ratings: number[]; employeeNames: string[] }
+    >();
+
+    employees.forEach((emp) => {
+      if (emp.skills) {
+        emp.skills.forEach((skill) => {
+          if (!skillsMap.has(skill.technology)) {
+            skillsMap.set(skill.technology, { ratings: [], employeeNames: [] });
+          }
+          const skillData = skillsMap.get(skill.technology)!;
+          skillData.ratings.push(skill.rating);
+          skillData.employeeNames.push(emp.name);
+        });
+      }
+    });
+
+    return Array.from(skillsMap.entries()).map(([name, data]) => ({
+      name,
+      count: data.employeeNames.length,
+      avgRating: data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length,
+      trend:
+        data.employeeNames.length > 15
+          ? "up"
+          : data.employeeNames.length > 10
+          ? "stable"
+          : "down",
+      experts: data.employeeNames.slice(0, 5),
+    }));
+  }, [employees]);
 
   // Filter and sort skills
   const filteredSkills = useMemo(() => {
@@ -103,6 +117,24 @@ export default function SkillsInventory() {
 
     return filtered;
   }, [organizationSkills, departmentFilter, minEmployees, sortBy, employees]);
+
+  // Early return after all hooks
+  if (loading || !data) {
+    return (
+      <DashboardLayout
+        role="hr"
+        title="Skills Inventory"
+        currentPath="/hr/skills"
+      >
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading skills data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -355,11 +387,8 @@ export default function SkillsInventory() {
                     const employeesWithSkill = getEmployeesForSkill(skill.name);
 
                     return (
-                      <>
-                        <tr
-                          key={skill.name}
-                          className="border-b hover:bg-muted/30 transition-colors"
-                        >
+                      <React.Fragment key={skill.name}>
+                        <tr className="border-b hover:bg-muted/30 transition-colors">
                           <td className="p-4 text-sm font-bold text-muted-foreground">
                             #{index + 1}
                           </td>
@@ -440,7 +469,7 @@ export default function SkillsInventory() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </React.Fragment>
                     );
                   })
                 )}

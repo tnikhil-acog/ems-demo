@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/hooks/use-data";
+import { getInitials } from "@/lib/utils";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -133,11 +134,9 @@ function ProfileContent() {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
               <div className="flex gap-6 flex-1">
-                <img
-                  src={employee.avatar || "/placeholder.svg"}
-                  alt={employee.name}
-                  className="w-24 h-24 rounded-lg"
-                />
+                <div className="w-24 h-24 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-3xl font-bold">
+                  {getInitials(employee.name)}
+                </div>
                 <div>
                   <h1 className="text-3xl font-bold text-foreground mb-1">
                     {employee.name}

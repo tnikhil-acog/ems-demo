@@ -1,220 +1,378 @@
-"use client"
+"use client";
 
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { useData } from "@/hooks/use-data"
-import { Users, AlertCircle, BarChart3, CheckCircle2 } from "lucide-react"
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  QuickStats,
+  ProjectCard,
+  ProjectCardProps,
+  TeamMember,
+  PendingActions,
+} from "@/components/manager";
+import { useData } from "@/hooks/use-data";
+import { ProjectDetailModal } from "@/components/modals";
+import {
+  Users,
+  Briefcase,
+  UserCheck,
+  FolderKanban,
+  CheckCircle2,
+} from "lucide-react";
+import { getInitials } from "@/lib/utils";
+import Link from "next/link";
 
 export default function ManagerDashboard() {
-  const { data, loading } = useData()
+  const { data, loading } = useData();
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   if (loading || !data) {
     return (
       <DashboardLayout role="manager" title="Dashboard" currentPath="/manager">
         <div>Loading...</div>
       </DashboardLayout>
-    )
+    );
   }
 
-  const managerProjects = data.projects.filter((p) => p.members.includes("EMP002") || p.members.includes("EMP001"))
+  // Get data from context
+  const projects = data.projects || [];
+  const allocations = data.project_allocations || [];
+
+  // Team members from employees data with actual allocation data
+  const teamMembers: TeamMember[] = data.employees
+    .slice(0, 3)
+    .map((emp: any) => {
+      const empAllocations = allocations.filter(
+        (alloc: any) => alloc.emp_id === emp.id
+      );
+      const totalAllocation = empAllocations.reduce(
+        (sum: number, alloc: any) => sum + alloc.allocation_percentage,
+        0
+      );
+      const available = Math.max(0, 100 - totalAllocation);
+      return {
+        id: emp.id,
+        name: emp.name,
+        designation: emp.designation,
+        department: emp.department,
+        allocation: totalAllocation,
+        available: available,
+        projectCount: empAllocations.length,
+        email: emp.email,
+      };
+    });
+
+  const onBenchCount = teamMembers.filter((m) => m.available >= 50).length;
+
+  // Get projects with allocation data
+  const myProjects: ProjectCardProps[] = projects
+    .slice(0, 2)
+    .map((proj: any) => {
+      const projectAllocations = allocations.filter(
+        (alloc: any) => alloc.project_id === proj.id
+      );
+      const totalAllocation = projectAllocations.reduce(
+        (sum: number, alloc: any) => sum + alloc.allocation_percentage,
+        0
+      );
+      const avgAllocation = Math.round(
+        projectAllocations.length > 0
+          ? totalAllocation / projectAllocations.length
+          : 0
+      );
+
+      return {
+        id: proj.id,
+        name: proj.name,
+        type: proj.type,
+        status: proj.status,
+        teamSize: proj.teamSize || projectAllocations.length,
+        avgAllocation: avgAllocation,
+        sentiment: "neutral",
+      };
+    });
+
+  const statsData = [
+    {
+      title: "Team Size",
+      value: teamMembers.length * 4,
+      icon: Users,
+      variant: "default" as const,
+    },
+    {
+      title: "Available Capacity",
+      value: "35%",
+      icon: UserCheck,
+      variant: "success" as const,
+    },
+    {
+      title: "On Bench",
+      value: onBenchCount,
+      icon: UserCheck,
+      variant: onBenchCount > 2 ? ("warning" as const) : ("default" as const),
+    },
+    {
+      title: "Projects Managed",
+      value: myProjects.length * 2,
+      icon: FolderKanban,
+      variant: "default" as const,
+    },
+  ];
 
   return (
     <DashboardLayout role="manager" title="Dashboard" currentPath="/manager">
       <div className="space-y-6">
-        {/* Team Overview Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">8</div>
-                <p className="text-sm text-muted-foreground">Team Size</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">75%</div>
-                <p className="text-sm text-muted-foreground">Available Capacity</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">2</div>
-                <p className="text-sm text-muted-foreground">On Bench</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">{managerProjects.length}</div>
-                <p className="text-sm text-muted-foreground">Projects Managed</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Welcome Header */}
+        <div>
+          <h1 className="text-3xl font-bold">Manager Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Welcome, Sarah Johnson</p>
         </div>
 
-        {/* Project Health */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 size={20} />
-              Project Health
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {managerProjects.map((project) => (
-                <Card key={project.id} className="border">
-                  <CardContent className="pt-6">
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-foreground">{project.name}</h4>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Team Size</span>
-                        <span className="font-semibold">{project.teamSize} members</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold">Health:</span>
-                        <span
-                          className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                            project.health === "healthy"
-                              ? "bg-green-100 text-green-700"
-                              : project.health === "at-risk"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {project.health === "healthy" && "🟢"}
-                          {project.health === "at-risk" && "🟡"}
-                          {project.health === "blocked" && "🔴"}
-                          {" " + (project.health.charAt(0).toUpperCase() + project.health.slice(1))}
+        {/* Quick Stats */}
+        <QuickStats stats={statsData} />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* My Team - Left Column (2/3 width) */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center gap-2">
+                    <Users size={20} />
+                    My Team
+                  </CardTitle>
+                  <Link href="/manager/team">
+                    <Button variant="outline" size="sm">
+                      View All
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {teamMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold">
+                      {member.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold">{member.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {member.designation}
+                      </p>
+                      <div className="flex items-center gap-4 mt-2 text-sm">
+                        <span>
+                          Allocation:{" "}
+                          <span className="font-semibold">
+                            {member.allocation}%
+                          </span>
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Available:{" "}
+                          <span className="font-semibold">
+                            {member.available}%
+                          </span>
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Projects:{" "}
+                          <span className="font-semibold">
+                            {member.projectCount}
+                          </span>
                         </span>
                       </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Allocation</span>
-                          <span className="font-semibold">{project.allocation}%</span>
-                        </div>
-                        <div className="bg-muted rounded-full h-2">
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all"
-                            style={{ width: `${project.allocation}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      <Button variant="outline" className="w-full text-xs mt-2 bg-transparent">
-                        View Details
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                    <div className="flex gap-2">
+                      <Link href={`/manager/employee/${member.id}`}>
+                        <Button variant="outline" size="sm">
+                          View Profile
+                        </Button>
+                      </Link>
+                      <Button size="sm">Assign</Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-        {/* AI Report Summaries */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 size={20} />
-              Team Weekly Reports
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {data.reports.slice(0, 3).map((report) => {
-                const employee = data.employees.find((e) => e.id === report.employeeId)
-                return (
-                  <div key={report.id} className="p-4 border rounded-lg hover:bg-muted/50">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={employee?.avatar || "/placeholder.svg"}
-                          alt={employee?.name}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <div>
-                          <p className="font-semibold text-sm">{employee?.name}</p>
-                          <p className="text-xs text-muted-foreground">Week of {report.week}</p>
-                        </div>
-                      </div>
-                      <span
-                        className={`text-lg ${
-                          report.sentiment === "positive"
-                            ? "text-green-600"
-                            : report.sentiment === "neutral"
-                              ? "text-yellow-600"
-                              : "text-red-600"
-                        }`}
+            {/* AI Report Summaries */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle2 size={20} />
+                  Team Weekly Reports
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {data.reports.slice(0, 3).map((report: any) => {
+                    const employee = data.employees.find(
+                      (e: any) => e.id === report.employeeId
+                    );
+                    return (
+                      <div
+                        key={report.id}
+                        className="p-4 border rounded-lg hover:bg-muted/50"
                       >
-                        {report.sentiment === "positive" && "😊"}
-                        {report.sentiment === "neutral" && "😐"}
-                        {report.sentiment === "negative" && "😟"}
-                      </span>
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+                              {employee && getInitials(employee.name)}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-sm">
+                                {employee?.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Week of {report.week}
+                              </p>
+                            </div>
+                          </div>
+                          <span
+                            className={`text-lg ${
+                              report.sentiment === "positive"
+                                ? "text-green-600"
+                                : report.sentiment === "neutral"
+                                ? "text-yellow-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {report.sentiment === "positive" && "😊"}
+                            {report.sentiment === "neutral" && "😐"}
+                            {report.sentiment === "negative" && "😟"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground mb-2">
+                          {report.summary}
+                        </p>
+                        <Button variant="link" className="text-xs p-0">
+                          Read full report →
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* My Projects - Right Column (1/3 width) */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase size={20} />
+                    My Projects
+                  </CardTitle>
+                  <Link href="/manager/projects">
+                    <Button variant="outline" size="sm">
+                      View All
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {myProjects.map((project) => (
+                  <div key={project.id} className="space-y-2">
+                    <div>
+                      <h4 className="font-semibold">
+                        {project.id} - {project.name}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        {project.status === "healthy" && (
+                          <span className="text-xs text-green-600">
+                            ✓ Healthy
+                          </span>
+                        )}
+                        {project.status === "at-risk" && (
+                          <span className="text-xs text-yellow-600">
+                            ⚠️ At Risk
+                          </span>
+                        )}
+                        {project.blockers && project.blockers > 0 && (
+                          <span className="text-xs text-red-600">
+                            ({project.blockers} blockers)
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-foreground mb-2">{report.summary}</p>
-                    <Button variant="link" className="text-xs p-0">
-                      Read full report →
+                    <div className="text-sm text-muted-foreground">
+                      <span>Team: {project.teamSize} members</span>
+                      <span className="mx-2">•</span>
+                      <span>Avg: {project.avgAllocation}%</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        const fullProject = data.projects.find(
+                          (p: any) => p.id === project.id
+                        );
+                        setSelectedProject(fullProject);
+                        setIsProjectModalOpen(true);
+                      }}
+                    >
+                      View Details
                     </Button>
                   </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Budget Alerts & Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle size={20} className="text-yellow-600" />
-                Budget Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {managerProjects
-                  .filter((p) => p.allocation > 80)
-                  .map((project) => (
-                    <div key={project.id} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm font-semibold text-yellow-900">{project.name}</p>
-                      <p className="text-xs text-yellow-700">Budget usage: {project.allocation}%</p>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users size={20} />
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full justify-start bg-transparent" variant="outline">
-                Assign Resource
-              </Button>
-              <Button className="w-full justify-start bg-transparent" variant="outline">
-                Verify Skills
-              </Button>
-              <Button className="w-full justify-start bg-transparent" variant="outline">
-                Review Reports
-              </Button>
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </div>
+
+        {/* Pending Actions */}
+        <PendingActions
+          transferRequests={[
+            {
+              id: "TR001",
+              employeeName: "Jane Doe",
+              requester: "Tom Brown",
+              projectId: "C060",
+              projectName: "Mobile Redesign",
+            },
+            {
+              id: "TR002",
+              employeeName: "Mike Chen",
+              requester: "Alice Wilson",
+              projectId: "P010",
+              projectName: "Internal Tool",
+            },
+          ]}
+          pendingReports={[
+            { employeeName: "Mike", dueDate: "today" },
+            { employeeName: "Alice", dueDate: "today" },
+            { employeeName: "Tom", dueDate: "today" },
+          ]}
+        />
+
+        {/* Project Detail Modal */}
+        <ProjectDetailModal
+          project={selectedProject}
+          isOpen={isProjectModalOpen}
+          onClose={() => {
+            setIsProjectModalOpen(false);
+            setSelectedProject(null);
+          }}
+          canEdit={true}
+          onSave={(updatedProject) => {
+            // TODO: Implement save logic - update data.json or backend
+            console.log("Save project:", updatedProject);
+            setIsProjectModalOpen(false);
+          }}
+        />
       </div>
     </DashboardLayout>
-  )
+  );
 }

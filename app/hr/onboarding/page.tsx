@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee as BaseEmployee } from "@/hooks/use-data";
+import { EmployeeDetailModal } from "@/components/modals";
 import {
   UserPlus,
   Upload,
@@ -44,25 +45,12 @@ export default function OnboardingManager() {
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilterType, setStatusFilterType] = useState("all"); // pending, completed, overdue
   const [sortBy, setSortBy] = useState("days-desc"); // days-asc, days-desc, completion-asc, completion-desc
+  const [selectedEmployee, setSelectedEmployee] = useState<BaseEmployee | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (loading || !data) {
-    return (
-      <DashboardLayout
-        role="hr"
-        title="Onboarding Manager"
-        currentPath="/hr/onboarding"
-      >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading onboarding data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  const employees: Employee[] = data.employees || [];
+  const employees: Employee[] = data?.employees || [];
   const OVERDUE_THRESHOLD_DAYS = 14;
   const COMPLETION_THRESHOLD = 100;
 
@@ -149,6 +137,24 @@ export default function OnboardingManager() {
 
     return filtered;
   }, [onboardingEmployees, departmentFilter, statusFilterType, sortBy]);
+
+  // Early return after all hooks
+  if (loading || !data) {
+    return (
+      <DashboardLayout
+        role="hr"
+        title="Onboarding Manager"
+        currentPath="/hr/onboarding"
+      >
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading onboarding data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   const getMissingItems = (emp: Employee) => {
     const missing: string[] = [];
@@ -486,7 +492,18 @@ export default function OnboardingManager() {
 
                     {/* Right: Actions */}
                     <div className="flex flex-col gap-2 lg:w-48">
-                      <Button variant="outline" size="sm" className="w-full">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => {
+                          const fullEmployee = data.employees.find(
+                            (e: any) => e.id === emp.id
+                          );
+                          setSelectedEmployee(fullEmployee || null);
+                          setIsModalOpen(true);
+                        }}
+                      >
                         <Eye size={14} className="mr-2" />
                         View Profile
                       </Button>
@@ -541,6 +558,17 @@ export default function OnboardingManager() {
           </CardContent>
         </Card>
       )}
+
+      {/* Employee Detail Modal */}
+      <EmployeeDetailModal
+        employee={selectedEmployee}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedEmployee(null);
+        }}
+        canEdit={false}
+      />
     </DashboardLayout>
   );
 }

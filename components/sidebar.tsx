@@ -79,49 +79,41 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
         {
           label: "My Team",
           icon: <Users size={baseSize} />,
-          href: "/team",
+          href: "/manager/team",
         },
         {
-          label: "All Projects",
+          label: "My Projects",
           icon: <Briefcase size={baseSize} />,
-          href: "/projects",
+          href: "/manager/projects",
         },
         {
-          label: "Weekly Reports",
-          icon: <FileText size={baseSize} />,
-          href: "/reports",
-          submenu: [
-            {
-              label: "My Report",
-              icon: <FileText size={16} />,
-              href: "/reports/my",
-            },
-            {
-              label: "Team Reports",
-              icon: <FileText size={16} />,
-              href: "/reports/team",
-            },
-          ],
-        },
-        {
-          label: "Search & Allocate",
+          label: "Find Resources",
           icon: <Search size={baseSize} />,
-          href: "/allocate",
+          href: "/manager/resources",
         },
         {
-          label: "Analytics",
-          icon: <BarChart3 size={baseSize} />,
-          href: "/analytics",
+          label: "Requests",
+          icon: <AlertCircle size={baseSize} />,
+          href: "/manager/requests",
         },
       ];
     } else {
       // HR role
       return [
-        ...commonItems,
         {
-          label: "Employee Directory",
+          label: "Dashboard",
+          icon: <Home size={baseSize} />,
+          href: `/${role}`,
+        },
+        {
+          label: "My Profile",
           icon: <Users size={baseSize} />,
-          href: "/hr/directory",
+          href: "/profile",
+        },
+        {
+          label: "Search Employees",
+          icon: <Search size={baseSize} />,
+          href: "/search",
         },
         {
           label: "Onboarding",
@@ -154,19 +146,9 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
           href: "/projects",
         },
         {
-          label: "Bulk Operations",
-          icon: <FileTextIcon size={baseSize} />,
-          href: "/bulk",
-        },
-        {
-          label: "Search Employees",
-          icon: <Search size={baseSize} />,
-          href: "/search",
-        },
-        {
-          label: "Audit Logs",
-          icon: <AlertCircle size={baseSize} />,
-          href: "/audit",
+          label: "Weekly Reports",
+          icon: <FileText size={baseSize} />,
+          href: "/hr/reports",
         },
       ];
     }
@@ -176,7 +158,7 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-sidebar via-slate-800 to-sidebar border-r border-sidebar-border transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-screen bg-linear-to-b from-sidebar via-slate-800 to-sidebar border-r border-sidebar-border transition-all duration-300 ${
         isCollapsed ? "w-20" : "w-80"
       } flex flex-col z-40`}
     >
@@ -184,7 +166,7 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-primary to-accent rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">A</span>
             </div>
             <div className="flex-1">
@@ -222,7 +204,7 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
                     : ""
                 } ${isCollapsed ? "justify-center" : ""}`}
               >
-                <span className="flex-shrink-0">{item.icon}</span>
+                <span className="shrink-0">{item.icon}</span>
                 {!isCollapsed && (
                   <span className="flex-1 text-left text-sm">{item.label}</span>
                 )}

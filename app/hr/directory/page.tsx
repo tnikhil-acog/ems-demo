@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee } from "@/hooks/use-data";
+import { EmployeeDetailModal } from "@/components/modals";
 import {
   Users,
   UserPlus,
@@ -36,19 +37,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  designation: string;
-  department: string;
-  status: string;
-  location?: string;
-  employmentType?: string;
-  joinDate: string;
-  reportingTo?: string;
-}
-
 type SortField = "name" | "department" | "designation" | "joinDate" | "status";
 type SortDirection = "asc" | "desc";
 
@@ -66,25 +54,12 @@ export default function EmployeeDirectory() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (loading || !data) {
-    return (
-      <DashboardLayout
-        role="hr"
-        title="Employee Directory"
-        currentPath="/hr/directory"
-      >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading employees...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  const employees: Employee[] = data.employees || [];
+  const employees: Employee[] = data?.employees || [];
 
   // Get unique values for filters
   const departments = Array.from(new Set(employees.map((e) => e.department)));
@@ -176,6 +151,24 @@ export default function EmployeeDirectory() {
     sortField,
     sortDirection,
   ]);
+
+  // Early return after all hooks
+  if (loading || !data) {
+    return (
+      <DashboardLayout
+        role="hr"
+        title="Employee Directory"
+        currentPath="/hr/directory"
+      >
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading employees...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedEmployees.length / pageSize);
@@ -531,11 +524,21 @@ export default function EmployeeDirectory() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedEmployee(emp);
+                                setIsModalOpen(true);
+                              }}
+                            >
                               <Eye size={14} className="mr-2" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedEmployee(emp);
+                                setIsModalOpen(true);
+                              }}
+                            >
                               <Edit size={14} className="mr-2" />
                               Edit
                             </DropdownMenuItem>
@@ -606,6 +609,22 @@ export default function EmployeeDirectory() {
           )}
         </CardContent>
       </Card>
+
+      {/* Employee Detail Modal */}
+      <EmployeeDetailModal
+        employee={selectedEmployee}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedEmployee(null);
+        }}
+        canEdit={true}
+        onSave={(updatedEmployee) => {
+          // TODO: Implement save logic - update data.json or backend
+          console.log("Save employee:", updatedEmployee);
+          setIsModalOpen(false);
+        }}
+      />
     </DashboardLayout>
   );
 }

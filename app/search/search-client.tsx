@@ -3,7 +3,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useData } from "@/hooks/use-data";
+import { useData, Employee } from "@/hooks/use-data";
+import { EmployeeDetailModal } from "@/components/modals";
+import { getInitials } from "@/lib/utils";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SearchIcon } from "lucide-react";
@@ -15,6 +17,10 @@ function SearchContent() {
   const [currentRole, setCurrentRole] = useState<"employee" | "manager" | "hr">(
     "employee"
   );
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const roleParam = searchParams.get("role");
@@ -83,11 +89,9 @@ function SearchContent() {
             >
               <CardContent className="pt-6">
                 <div className="flex gap-4 mb-4">
-                  <img
-                    src={employee.avatar || "/placeholder.svg"}
-                    alt={employee.name}
-                    className="w-16 h-16 rounded-lg"
-                  />
+                  <div className="w-16 h-16 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold">
+                    {getInitials(employee.name)}
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-foreground">
                       {employee.name}
@@ -110,7 +114,14 @@ function SearchContent() {
                     {employee.phone}
                   </p>
                 </div>
-                <Button variant="outline" className="w-full bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent"
+                  onClick={() => {
+                    setSelectedEmployee(employee);
+                    setIsModalOpen(true);
+                  }}
+                >
                   View Profile
                 </Button>
               </CardContent>
@@ -127,6 +138,17 @@ function SearchContent() {
             </CardContent>
           </Card>
         )}
+
+        {/* Employee Detail Modal */}
+        <EmployeeDetailModal
+          employee={selectedEmployee}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEmployee(null);
+          }}
+          canEdit={false}
+        />
       </div>
     </DashboardLayout>
   );
