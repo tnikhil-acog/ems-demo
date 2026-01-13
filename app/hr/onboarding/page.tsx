@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useData, Employee as BaseEmployee } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import { EmployeeDetailModal } from "@/components/modals";
+import { useStatusVariant } from "@/hooks/use-status-variant";
+import { getUniqueDepartments, calculateDaysSince } from "@/lib/utils";
 import {
   UserPlus,
   Upload,
@@ -59,17 +62,9 @@ export default function OnboardingManager() {
     (emp) => emp.status === "active"
   );
 
-  const calculateDaysSinceJoining = (joinDate: string) => {
-    const join = new Date(joinDate);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - join.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
   const getOnboardingStatus = (emp: Employee) => {
     const progress = emp.onboardingProgress ?? 100;
-    const days = calculateDaysSinceJoining(emp.joinDate);
+    const days = calculateDaysSince(emp.joinDate);
 
     if (progress >= COMPLETION_THRESHOLD) return "completed";
     if (days > OVERDUE_THRESHOLD_DAYS) return "overdue";
@@ -96,36 +91,44 @@ export default function OnboardingManager() {
     completedEmployees.length > 0
       ? Math.round(
           completedEmployees.reduce(
-            (sum, emp) => sum + calculateDaysSinceJoining(emp.joinDate),
+            (sum, emp) => sum + calculateDaysSince(emp.joinDate),
             0
           ) / completedEmployees.length
         )
       : 0;
 
-  // Filter employees
+  // Pre-compute employee metrics once to avoid redundant calculations
+  const processedEmployees = useMemo(
+    () =>
+      onboardingEmployees.map((emp) => ({
+        ...emp,
+        daysSinceJoin: calculateDaysSince(emp.joinDate),
+        onboardingStatus: getOnboardingStatus(emp),
+      })),
+    [onboardingEmployees]
+  );
+
+  // Filter employees using pre-computed values
   const filteredEmployees = useMemo(() => {
-    let filtered = onboardingEmployees.filter((emp) => {
+    let filtered = processedEmployees.filter((emp) => {
       const matchesDept =
         departmentFilter === "all" || emp.department === departmentFilter;
-      const empStatus = getOnboardingStatus(emp);
       const matchesStatus =
-        statusFilterType === "all" || empStatus === statusFilterType;
+        statusFilterType === "all" || emp.onboardingStatus === statusFilterType;
 
       return matchesDept && matchesStatus;
     });
 
-    // Sorting
+    // Sorting using pre-computed daysSinceJoin
     filtered.sort((a, b) => {
-      const aDays = calculateDaysSinceJoining(a.joinDate);
-      const bDays = calculateDaysSinceJoining(b.joinDate);
       const aProgress = a.onboardingProgress ?? 100;
       const bProgress = b.onboardingProgress ?? 100;
 
       switch (sortBy) {
         case "days-asc":
-          return aDays - bDays;
+          return a.daysSinceJoin - b.daysSinceJoin;
         case "days-desc":
-          return bDays - aDays;
+          return b.daysSinceJoin - a.daysSinceJoin;
         case "completion-asc":
           return aProgress - bProgress;
         case "completion-desc":
@@ -136,7 +139,7 @@ export default function OnboardingManager() {
     });
 
     return filtered;
-  }, [onboardingEmployees, departmentFilter, statusFilterType, sortBy]);
+  }, [processedEmployees, departmentFilter, statusFilterType, sortBy]);
 
   // Early return after all hooks
   if (loading || !data) {
@@ -146,12 +149,7 @@ export default function OnboardingManager() {
         title="Onboarding Manager"
         currentPath="/hr/onboarding"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading onboarding data...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading onboarding data..." />
       </DashboardLayout>
     );
   }
@@ -181,21 +179,7 @@ export default function OnboardingManager() {
     return missing;
   };
 
-  const getStatusBadge = (emp: Employee) => {
-    const status = getOnboardingStatus(emp);
-    switch (status) {
-      case "completed":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600">Completed</Badge>
-        );
-      case "overdue":
-        return <Badge variant="destructive">Overdue</Badge>;
-      case "pending":
-        return <Badge variant="secondary">Pending</Badge>;
-    }
-  };
-
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
+  const departments = getUniqueDepartments(employees);
 
   return (
     <DashboardLayout
@@ -388,9 +372,9 @@ export default function OnboardingManager() {
           </Card>
         ) : (
           filteredEmployees.map((emp) => {
-            const days = calculateDaysSinceJoining(emp.joinDate);
+            const days = emp.daysSinceJoin;
             const progress = emp.onboardingProgress ?? 100;
-            const status = getOnboardingStatus(emp);
+            const status = emp.onboardingStatus;
             const missingItems = getMissingItems(emp);
             const manager = employees.find((e) => e.id === emp.reportingTo);
 
@@ -419,7 +403,20 @@ export default function OnboardingManager() {
                             </p>
                           )}
                         </div>
-                        {getStatusBadge(emp)}
+                        <Badge
+                          variant={useStatusVariant(status) as any}
+                          className={
+                            status === "completed"
+                              ? "bg-green-500 hover:bg-green-600"
+                              : ""
+                          }
+                        >
+                          {status === "completed"
+                            ? "Completed"
+                            : status === "overdue"
+                            ? "Overdue"
+                            : "Pending"}
+                        </Badge>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mb-4">

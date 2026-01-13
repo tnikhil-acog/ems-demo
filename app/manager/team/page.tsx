@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { TeamMemberRow, TeamMember } from "@/components/manager";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import { Users, Search, Download } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -31,12 +32,7 @@ export default function MyTeamPage() {
         title="My Team"
         currentPath="/manager/team"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading team members...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading team members..." />
       </DashboardLayout>
     );
   }

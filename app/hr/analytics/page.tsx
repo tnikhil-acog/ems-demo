@@ -5,6 +5,11 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useData, Employee } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
+import {
+  getUniqueDepartments,
+  calculateDepartmentStatistics,
+} from "@/lib/utils";
 import {
   Download,
   Users,
@@ -28,41 +33,14 @@ export default function HRAnalytics() {
 
   // Extract data with safe defaults
   const employees: Employee[] = data?.employees || [];
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
+  const departments = getUniqueDepartments(employees);
   const allocations = data?.project_allocations || [];
 
-  // Generate department stats
-  const departmentStats = useMemo(() => {
-    const deptMap = new Map<string, Employee[]>();
-    employees
-      .filter((e) => e.status === "active")
-      .forEach((emp) => {
-        if (!deptMap.has(emp.department)) {
-          deptMap.set(emp.department, []);
-        }
-        deptMap.get(emp.department)!.push(emp);
-      });
-
-    // Calculate utilization from actual allocations
-    return Array.from(deptMap.entries()).map(([dept, emps]) => {
-      const deptAllocations = allocations.filter((alloc: any) =>
-        emps.some((emp) => emp.id === alloc.emp_id)
-      );
-      const totalAllocation = deptAllocations.reduce(
-        (sum: number, alloc: any) => sum + alloc.allocation_percentage,
-        0
-      );
-      const avgUtilization =
-        emps.length > 0 ? Math.round(totalAllocation / emps.length) : 0;
-      return {
-        department: dept,
-        employeeCount: emps.length,
-        utilization: avgUtilization,
-        onBench: emps.filter((e) => !e.skills || e.skills.length === 0).length,
-        trend: "stable" as const,
-      };
-    });
-  }, [employees, allocations]);
+  // Generate department stats using shared utility
+  const departmentStats = useMemo(
+    () => calculateDepartmentStatistics(employees, allocations),
+    [employees, allocations]
+  );
 
   // Early return AFTER all hooks
   if (loading || !data) {
@@ -72,12 +50,7 @@ export default function HRAnalytics() {
         title="HR Analytics"
         currentPath="/hr/analytics"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading analytics...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading analytics..." />
       </DashboardLayout>
     );
   }

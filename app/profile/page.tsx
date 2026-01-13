@@ -7,6 +7,7 @@ import { useData } from "@/hooks/use-data";
 import { getInitials } from "@/lib/utils";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import LoadingState from "@/components/ui/loading";
 import {
   Mail,
   Phone,
@@ -64,7 +65,7 @@ function ProfileContent() {
         currentPath="/profile"
         breadcrumbs={[{ label: "My Profile" }]}
       >
-        <div>Loading...</div>
+        <LoadingState message="Loading profile..." />
       </DashboardLayout>
     );
   }

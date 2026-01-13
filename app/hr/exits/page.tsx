@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useData, Employee } from "@/hooks/use-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LoadingState from "@/components/ui/loading";
+import { useStatusVariant } from "@/hooks/use-status-variant";
+import {
+  getUniqueDepartments,
+  getUniqueValues,
+  calculateDaysUntil,
+} from "@/lib/utils";
 import {
   LogOut,
   Download,
@@ -41,35 +48,6 @@ export default function ExitManagement() {
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [exitTypeFilter, setExitTypeFilter] = useState("all");
 
-  if (loading || !data) {
-    return (
-      <DashboardLayout
-        role="hr"
-        title="Exit Management"
-        currentPath="/hr/exits"
-      >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading exit data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  const employees: Employee[] = data.employees || [];
-
-  // Calculate days until exit
-  const calculateDaysRemaining = (exitDate?: string) => {
-    if (!exitDate) return null;
-    const exit = new Date(exitDate);
-    const today = new Date();
-    const diffTime = exit.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
   // Simulated checklist for demo purposes
   const getChecklistForEmployee = (empId: string): ChecklistItem[] => {
     // In real app, this would come from backend
@@ -84,13 +62,31 @@ export default function ExitManagement() {
     return baseChecklist;
   };
 
+  const employees: Employee[] = data?.employees || [];
+
   // Categorize exits
   const inProgressExits = employees.filter(
     (emp) => emp.status === "exit-initiated"
   );
   const exitedEmployees = employees.filter((emp) => emp.status === "exited");
-  // Note: "archived" status doesn't exist in the current schema
-  // const archivedExits = employees.filter((emp) => emp.status === "archived");
+
+  // Filter function
+  const filterExits = (exitList: Employee[]) => {
+    return exitList.filter((emp) => {
+      const matchesDept =
+        departmentFilter === "all" || emp.department === departmentFilter;
+      const matchesType =
+        exitTypeFilter === "all" || emp.exitReason === exitTypeFilter;
+      return matchesDept && matchesType;
+    });
+  };
+
+  // Memoized filtered results to prevent redundant filtering on every render
+  const [inProgressFiltered, exitedFiltered] = useMemo(() => {
+    const inProgress = filterExits(inProgressExits);
+    const exited = filterExits(exitedEmployees);
+    return [inProgress, exited];
+  }, [inProgressExits, exitedEmployees, departmentFilter, exitTypeFilter]);
 
   // Calculate stats
   const inProgressCount = inProgressExits.length;
@@ -116,37 +112,24 @@ export default function ExitManagement() {
     );
   }).length;
 
-  // Filter function
-  const filterExits = (exitList: Employee[]) => {
-    return exitList.filter((emp) => {
-      const matchesDept =
-        departmentFilter === "all" || emp.department === departmentFilter;
-      const matchesType =
-        exitTypeFilter === "all" || emp.exitReason === exitTypeFilter;
-      return matchesDept && matchesType;
-    });
-  };
+  const departments = getUniqueDepartments(employees);
+  const exitTypes = getUniqueValues(employees, "exitReason");
 
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
-  const exitTypes = Array.from(
-    new Set(employees.map((e) => e.exitReason).filter(Boolean))
-  );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "exit-initiated":
-        return <Badge variant="destructive">Exit Initiated</Badge>;
-      case "exited":
-        return <Badge variant="secondary">Exited</Badge>;
-      case "archived":
-        return <Badge variant="outline">Archived</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
+  // Early return for loading state AFTER all hooks
+  if (loading || !data) {
+    return (
+      <DashboardLayout
+        role="hr"
+        title="Exit Management"
+        currentPath="/hr/exits"
+      >
+        <LoadingState message="Loading exit data..." />
+      </DashboardLayout>
+    );
+  }
 
   const renderExitCard = (emp: Employee) => {
-    const daysRemaining = calculateDaysRemaining(emp.exitDate);
+    const daysRemaining = calculateDaysUntil(emp.exitDate);
     const checklist = getChecklistForEmployee(emp.id);
     const completedCount = checklist.filter((item) => item.completed).length;
     const totalCount = checklist.length;
@@ -176,7 +159,13 @@ export default function ExitManagement() {
                     </p>
                   )}
                 </div>
-                {getStatusBadge(emp.status)}
+                <Badge variant={useStatusVariant(emp.status) as any}>
+                  {emp.status === "exit-initiated"
+                    ? "Exit Initiated"
+                    : emp.status === "exited"
+                    ? "Exited"
+                    : emp.status}
+                </Badge>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -426,15 +415,15 @@ export default function ExitManagement() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="in-progress">
-            In Progress ({filterExits(inProgressExits).length})
+            In Progress ({inProgressFiltered.length})
           </TabsTrigger>
           <TabsTrigger value="exited">
-            Exited ({filterExits(exitedEmployees).length})
+            Exited ({exitedFiltered.length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="in-progress" className="space-y-4">
-          {filterExits(inProgressExits).length === 0 ? (
+          {inProgressFiltered.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <LogOut
@@ -447,12 +436,12 @@ export default function ExitManagement() {
               </CardContent>
             </Card>
           ) : (
-            filterExits(inProgressExits).map((emp) => renderExitCard(emp))
+            inProgressFiltered.map((emp) => renderExitCard(emp))
           )}
         </TabsContent>
 
         <TabsContent value="exited" className="space-y-4">
-          {filterExits(exitedEmployees).length === 0 ? (
+          {exitedFiltered.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <LogOut
@@ -463,7 +452,7 @@ export default function ExitManagement() {
               </CardContent>
             </Card>
           ) : (
-            filterExits(exitedEmployees).map((emp) => renderExitCard(emp))
+            exitedFiltered.map((emp) => renderExitCard(emp))
           )}
         </TabsContent>
       </Tabs>

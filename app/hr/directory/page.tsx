@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useData, Employee } from "@/hooks/use-data";
 import { EmployeeDetailModal } from "@/components/modals";
+import LoadingState from "@/components/ui/loading";
+import { getUniqueDepartments, getUniqueValues } from "@/lib/utils";
 import {
   Users,
   UserPlus,
@@ -62,14 +64,10 @@ export default function EmployeeDirectory() {
   const employees: Employee[] = data?.employees || [];
 
   // Get unique values for filters
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
-  const locations = Array.from(
-    new Set(employees.map((e) => e.location).filter(Boolean))
-  );
-  const employmentTypes = Array.from(
-    new Set(employees.map((e) => e.employmentType).filter(Boolean))
-  );
-  const statuses = Array.from(new Set(employees.map((e) => e.status)));
+  const departments = getUniqueDepartments(employees);
+  const locations = getUniqueValues(employees, "location");
+  const employmentTypes = getUniqueValues(employees, "employmentType");
+  const statuses = getUniqueValues(employees, "status", false);
 
   // Filtering and sorting
   const filteredAndSortedEmployees = useMemo(() => {
@@ -160,12 +158,7 @@ export default function EmployeeDirectory() {
         title="Employee Directory"
         currentPath="/hr/directory"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading employees...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading employees..." />
       </DashboardLayout>
     );
   }

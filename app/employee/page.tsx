@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import { AlertCircle, CheckCircle, Briefcase, FileText } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -16,7 +17,7 @@ export default function EmployeeDashboard() {
         title="Dashboard"
         currentPath="/employee"
       >
-        <div>Loading...</div>
+        <LoadingState />
       </DashboardLayout>
     );
   }

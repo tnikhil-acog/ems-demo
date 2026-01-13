@@ -13,6 +13,7 @@ import {
 } from "@/components/manager";
 import { useData } from "@/hooks/use-data";
 import { ProjectDetailModal } from "@/components/modals";
+import LoadingState from "@/components/ui/loading";
 import {
   Users,
   Briefcase,
@@ -31,7 +32,7 @@ export default function ManagerDashboard() {
   if (loading || !data) {
     return (
       <DashboardLayout role="manager" title="Dashboard" currentPath="/manager">
-        <div>Loading...</div>
+        <LoadingState />
       </DashboardLayout>
     );
   }

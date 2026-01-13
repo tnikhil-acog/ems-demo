@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useData, Employee } from "@/hooks/use-data";
 import { getInitials } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LoadingState from "@/components/ui/loading";
+import { useStatusVariant } from "@/hooks/use-status-variant";
 import {
   ArrowLeft,
   Edit,
@@ -40,12 +42,7 @@ export default function EmployeeProfile({
         title="Employee Profile"
         currentPath="/hr/employee"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading employee profile...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading employee profile..." />
       </DashboardLayout>
     );
   }
@@ -81,21 +78,6 @@ export default function EmployeeProfile({
   }
 
   const manager = employees.find((emp: any) => emp.id === employee.reportingTo);
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
-        );
-      case "exit-initiated":
-        return <Badge variant="destructive">Exit Initiated</Badge>;
-      case "exited":
-        return <Badge variant="secondary">Exited</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
 
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -142,7 +124,13 @@ export default function EmployeeProfile({
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {getStatusBadge(employee.status)}
+                    <Badge variant={useStatusVariant(employee.status) as any}>
+                      {employee.status === "active"
+                        ? "Active"
+                        : employee.status === "exit-initiated"
+                        ? "Exit Initiated"
+                        : "Exited"}
+                    </Badge>
                   </div>
                 </div>
 

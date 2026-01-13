@@ -6,6 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useData, Employee } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
+import {
+  getUniqueDepartments,
+  calculateSkillStatistics,
+  type SkillData,
+} from "@/lib/utils";
 import {
   Download,
   TrendingUp,
@@ -25,14 +31,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface Skill {
-  name: string;
-  count: number;
-  avgRating: number;
-  trend: string;
-  experts?: string[];
-}
-
 export default function SkillsInventory() {
   const { data, loading } = useData();
   const [departmentFilter, setDepartmentFilter] = useState("all");
@@ -41,41 +39,13 @@ export default function SkillsInventory() {
   const [sortBy, setSortBy] = useState("count-desc");
 
   const employees: Employee[] = data?.employees || [];
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
+  const departments = getUniqueDepartments(employees);
 
-  // Generate skills from employees
-  const organizationSkills: Skill[] = useMemo(() => {
-    const skillsMap = new Map<
-      string,
-      { ratings: number[]; employeeNames: string[] }
-    >();
-
-    employees.forEach((emp) => {
-      if (emp.skills) {
-        emp.skills.forEach((skill) => {
-          if (!skillsMap.has(skill.technology)) {
-            skillsMap.set(skill.technology, { ratings: [], employeeNames: [] });
-          }
-          const skillData = skillsMap.get(skill.technology)!;
-          skillData.ratings.push(skill.rating);
-          skillData.employeeNames.push(emp.name);
-        });
-      }
-    });
-
-    return Array.from(skillsMap.entries()).map(([name, data]) => ({
-      name,
-      count: data.employeeNames.length,
-      avgRating: data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length,
-      trend:
-        data.employeeNames.length > 15
-          ? "up"
-          : data.employeeNames.length > 10
-          ? "stable"
-          : "down",
-      experts: data.employeeNames.slice(0, 5),
-    }));
-  }, [employees]);
+  // Generate skills from employees using shared utility
+  const organizationSkills: SkillData[] = useMemo(
+    () => calculateSkillStatistics(employees),
+    [employees]
+  );
 
   // Filter and sort skills
   const filteredSkills = useMemo(() => {
@@ -126,12 +96,7 @@ export default function SkillsInventory() {
         title="Skills Inventory"
         currentPath="/hr/skills"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading skills data...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading skills data..." />
       </DashboardLayout>
     );
   }
@@ -254,11 +219,7 @@ export default function SkillsInventory() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-4xl font-bold text-orange-600 mb-2">
-                {
-                  organizationSkills.filter(
-                    (s) => s.trend === "up-high" || s.trend === "up"
-                  ).length
-                }
+                {organizationSkills.filter((s) => s.trend === "up").length}
               </div>
               <p className="text-sm text-muted-foreground font-medium">
                 Trending Up

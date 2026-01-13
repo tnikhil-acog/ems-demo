@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface Employee {
   id: string;
@@ -108,22 +108,35 @@ export interface EMSData {
 export function useData() {
   const [data, setData] = useState<EMSData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/data.json");
-        const jsonData = await response.json();
-        setData(jsonData);
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/data.json");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-
-    fetchData();
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load data";
+      setError(errorMessage);
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { data, loading };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch };
 }

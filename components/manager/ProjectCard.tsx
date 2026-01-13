@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AllocationBar } from "./AllocationBar";
 import { Calendar, Users, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { useHealthStatus } from "@/hooks/use-status-variant";
 
 export interface ProjectCardProps {
   id: string;
@@ -36,24 +37,7 @@ export function ProjectCard({
   blockers,
   href = `/manager/projects/${id}`,
 }: ProjectCardProps) {
-  const getStatusBadge = () => {
-    switch (status) {
-      case "healthy":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600">✓ Healthy</Badge>
-        );
-      case "at-risk":
-        return (
-          <Badge className="bg-yellow-500 hover:bg-yellow-600">
-            ⚠️ At Risk
-          </Badge>
-        );
-      case "blocked":
-        return (
-          <Badge className="bg-red-500 hover:bg-red-600">🛑 Blocked</Badge>
-        );
-    }
-  };
+  const healthStatus = useHealthStatus(status);
 
   const getSentimentEmoji = () => {
     if (sentiment === "positive") return "😊";
@@ -91,7 +75,18 @@ export function ProjectCard({
           )}
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="outline">{getPriorityLabel(type)}</Badge>
-            {getStatusBadge()}
+            <Badge
+              variant={healthStatus.variant as any}
+              className={
+                status === "healthy"
+                  ? "bg-green-500 hover:bg-green-600"
+                  : status === "at-risk"
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : "bg-red-500 hover:bg-red-600"
+              }
+            >
+              {healthStatus.icon} {healthStatus.label}
+            </Badge>
           </div>
         </div>
 

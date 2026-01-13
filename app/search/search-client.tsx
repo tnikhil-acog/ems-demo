@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useData, Employee } from "@/hooks/use-data";
 import { EmployeeDetailModal } from "@/components/modals";
 import { getInitials } from "@/lib/utils";
+import LoadingState from "@/components/ui/loading";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SearchIcon } from "lucide-react";
@@ -41,7 +42,7 @@ function SearchContent() {
         currentPath="/search"
         breadcrumbs={[{ label: "Search Colleagues" }]}
       >
-        <div>Loading...</div>
+        <LoadingState message="Loading search..." />
       </DashboardLayout>
     );
   }

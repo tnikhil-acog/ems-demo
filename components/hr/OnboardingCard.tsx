@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { calculateDaysSince, getProgressColor } from "@/lib/utils";
 
 export interface OnboardingEmployee {
   id: string;
@@ -23,18 +24,8 @@ export function OnboardingCard({
   onSendReminder,
   onViewProfile,
 }: OnboardingCardProps) {
-  const daysSinceJoin = Math.floor(
-    (new Date().getTime() - new Date(employee.joinDate).getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
+  const daysSinceJoin = calculateDaysSince(employee.joinDate);
   const isOverdue = daysSinceJoin > 14;
-
-  const getProgressColor = () => {
-    if (employee.onboardingProgress === 100) return "bg-green-500";
-    if (employee.onboardingProgress >= 75) return "bg-blue-500";
-    if (employee.onboardingProgress >= 50) return "bg-yellow-500";
-    return "bg-red-500";
-  };
 
   return (
     <div className="border rounded-lg p-4 space-y-3 hover:shadow-md transition-shadow">
@@ -67,7 +58,9 @@ export function OnboardingCard({
         </div>
         <div className="bg-muted rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all ${getProgressColor()}`}
+            className={`h-2 rounded-full transition-all ${getProgressColor(
+              employee.onboardingProgress
+            )}`}
             style={{ width: `${employee.onboardingProgress}%` }}
           />
         </div>

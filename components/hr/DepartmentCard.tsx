@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { getProgressColor, getUtilizationColor } from "@/lib/utils";
 
 export interface DepartmentStats {
   department: string;
@@ -18,20 +19,6 @@ interface DepartmentCardProps {
 }
 
 export function DepartmentCard({ department, onClick }: DepartmentCardProps) {
-  const getUtilizationColor = () => {
-    if (department.utilization >= 90) return "text-green-600";
-    if (department.utilization >= 70) return "text-blue-600";
-    if (department.utilization >= 50) return "text-yellow-600";
-    return "text-red-600";
-  };
-
-  const getProgressColor = () => {
-    if (department.utilization >= 90) return "bg-green-500";
-    if (department.utilization >= 70) return "bg-blue-500";
-    if (department.utilization >= 50) return "bg-yellow-500";
-    return "bg-red-500";
-  };
-
   const getTrendIcon = () => {
     switch (department.trend) {
       case "up":
@@ -63,14 +50,20 @@ export function DepartmentCard({ department, onClick }: DepartmentCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Utilization</span>
-              <span className={`text-lg font-bold ${getUtilizationColor()}`}>
+              <span
+                className={`text-lg font-bold ${getUtilizationColor(
+                  department.utilization
+                )}`}
+              >
                 {department.utilization}%
               </span>
             </div>
             <div className="relative">
               <div className="w-full bg-muted rounded-full h-2">
                 <div
-                  className={`h-2 rounded-full transition-all ${getProgressColor()}`}
+                  className={`h-2 rounded-full transition-all ${getProgressColor(
+                    department.utilization
+                  )}`}
                   style={{ width: `${department.utilization}%` }}
                 />
               </div>

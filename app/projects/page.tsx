@@ -7,6 +7,7 @@ import { useData } from "@/hooks/use-data";
 import { ProjectDetailModal } from "@/components/modals";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import LoadingState from "@/components/ui/loading";
 import { Users, TrendingUp } from "lucide-react";
 
 function ProjectsContent() {
@@ -38,7 +39,7 @@ function ProjectsContent() {
         currentPath="/projects"
         breadcrumbs={[{ label: "All Projects" }]}
       >
-        <div>Loading...</div>
+        <LoadingState message="Loading projects..." />
       </DashboardLayout>
     );
   }

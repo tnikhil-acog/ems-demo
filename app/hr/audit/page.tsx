@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { getUniqueValues } from "@/lib/utils";
 import { Download, Filter, FileText, User, Calendar, Eye } from "lucide-react";
 import {
   Select,
@@ -91,11 +92,9 @@ export default function AuditLogs() {
     return matchesActor && matchesObjectType && matchesAction;
   });
 
-  const actors = Array.from(new Set(auditLogs.map((log) => log.actor)));
-  const objectTypes = Array.from(
-    new Set(auditLogs.map((log) => log.objectType))
-  );
-  const actionTypes = Array.from(new Set(auditLogs.map((log) => log.action)));
+  const actors = getUniqueValues(auditLogs, "actor", false);
+  const objectTypes = getUniqueValues(auditLogs, "objectType", false);
+  const actionTypes = getUniqueValues(auditLogs, "action", false);
 
   const totalPages = Math.ceil(filteredLogs.length / pageSize);
   const paginatedLogs = filteredLogs.slice(

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { ProjectCard, ProjectCardProps } from "@/components/manager";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import { FolderKanban, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -27,12 +28,7 @@ export default function MyProjectsPage() {
         title="My Projects"
         currentPath="/manager/projects"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading projects...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading projects..." />
       </DashboardLayout>
     );
   }

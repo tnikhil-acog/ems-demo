@@ -90,9 +90,12 @@ function arrayToCSV(data: any[]): string {
 
 /**
  * Download CSV file
+ * Adds UTF-8 BOM to ensure proper Unicode character rendering in Excel
  */
 function downloadCSV(csv: string, filename: string): void {
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  // UTF-8 BOM (Byte Order Mark) ensures Excel renders Unicode correctly
+  const BOM = "\uFEFF";
+  const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
 

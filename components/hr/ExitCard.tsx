@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { calculateDaysUntil } from "@/lib/utils";
 
 export interface ExitEmployee {
   id: string;
@@ -27,10 +28,7 @@ export function ExitCard({
   onViewProjects,
 }: ExitCardProps) {
   const daysUntilExit = employee.exitDate
-    ? Math.ceil(
-        (new Date(employee.exitDate).getTime() - new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
+    ? calculateDaysUntil(employee.exitDate)
     : null;
 
   const getUrgencyBadge = () => {

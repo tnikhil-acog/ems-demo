@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import {
   Bell,
   ArrowRightLeft,
@@ -72,12 +73,7 @@ export default function TransferRequestsPage() {
         title="Transfer Requests"
         currentPath="/manager/requests"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading requests...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading requests..." />
       </DashboardLayout>
     );
   }

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useData } from "@/hooks/use-data";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
+import LoadingState from "@/components/ui/loading";
 
 function ReportsContent() {
   const { data, loading } = useData();
@@ -32,7 +33,7 @@ function ReportsContent() {
         currentPath="/reports"
         breadcrumbs={[{ label: "Weekly Reports" }]}
       >
-        <div>Loading...</div>
+        <LoadingState message="Loading reports..." />
       </DashboardLayout>
     );
   }

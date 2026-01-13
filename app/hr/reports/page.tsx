@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import {
   FileText,
   Calendar,
@@ -28,7 +29,7 @@ export default function HRReportsPage() {
         title="Weekly Reports"
         currentPath="/hr/reports"
       >
-        <div>Loading...</div>
+        <LoadingState message="Loading reports..." />
       </DashboardLayout>
     );
   }

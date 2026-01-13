@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AllocationBar, TeamMember } from "@/components/manager";
 import { useData } from "@/hooks/use-data";
+import LoadingState from "@/components/ui/loading";
 import {
   ArrowLeft,
   Edit,
@@ -37,12 +38,7 @@ export default function ProjectDetailPage({
         title="Project Details"
         currentPath="/manager/projects"
       >
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading project details...</p>
-          </div>
-        </div>
+        <LoadingState message="Loading project details..." />
       </DashboardLayout>
     );
   }
